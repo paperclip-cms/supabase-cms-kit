@@ -7,9 +7,17 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  // If the env vars are not set, skip middleware check. You can remove this
-  // once you setup the project.
+  // Check if accessing onboarding page or API routes
+  const isOnboardingPath = request.nextUrl.pathname.startsWith("/onboarding");
+  const isApiRoute = request.nextUrl.pathname.startsWith("/api");
+
+  // If the env vars are not set, redirect to onboarding (unless already there)
   if (!hasEnvVars) {
+    if (!isOnboardingPath && !isApiRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/onboarding";
+      return NextResponse.redirect(url);
+    }
     return supabaseResponse;
   }
 
