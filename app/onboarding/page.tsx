@@ -29,12 +29,12 @@ const steps: Step[] = [
   },
   {
     id: "migrations",
-    title: "Database Setup",
+    title: "Database Migrations",
     description: "Run database migrations",
   },
   {
     id: "create_user",
-    title: "Create Admin User",
+    title: "Create First User",
     description: "Set up your admin account",
   },
   {
