@@ -2,7 +2,7 @@
 If you'd prefer to set things up manually - without the setup wizard - follow these steps:
 
 ### Fork the repo
-Click here to fork this repository: <a class="github-button" href="https://github.com/paperclip-cms/supabase-cms-kit/fork" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-repo-forked" data-size="large" data-show-count="true" aria-label="Fork paperclip-cms/supabase-cms-kit on GitHub">Fork</a>
+[Click here](https://github.com/paperclip-cms/supabase-cms-kit/fork) to fork this repository.
 
 or, fork with the GitHub CLI:
 ```bash
@@ -57,8 +57,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 Your service role key is only used for admin account setup. If you do not feel comfortable using this key, you have two options:
 
 1. Once you've gone through the account setup wizard, revoke this key and/or remove it from your `.env` file
-1. Manually create your first user in the Supabase Studio ([here](https://supabase.com/dashboard/project/_/auth/users?sortBy=id)), **after** you have run the migrations
-
+1. Manually create your first user in the Supabase Studio ([here](https://supabase.com/dashboard/project/_/auth/users?sortBy=id)), **after** you have run the migrations. The setup wizard will detect this user automatically, so no further action is needed.
 
 ### Start the server
 

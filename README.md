@@ -1,10 +1,10 @@
-# Paperclip OSS (Supabase CMS Kit)
+# 📎 Paperclip OSS (Supabase CMS Kit)
 Paperclip OSS (Supabase CMS kit by [paperclip](https://paperclip.dev)) is an open-source API + UI layer for Supabase.
 
 ## Getting Started
 
 ### Fork the repo
-Click here to fork this repository: <a class="github-button" href="https://github.com/paperclip-cms/supabase-cms-kit/fork" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-repo-forked" data-size="large" data-show-count="true" aria-label="Fork paperclip-cms/supabase-cms-kit on GitHub">Fork</a>
+[Click here](https://github.com/paperclip-cms/supabase-cms-kit/fork) to fork this repository.
 
 Then, clone the forked repository to your local machine:
 ```
