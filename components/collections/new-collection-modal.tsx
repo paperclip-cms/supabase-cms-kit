@@ -1,32 +1,37 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { z } from 'zod';
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { IconPicker } from '@/components/ui/icon-picker';
-import type dynamicIconImports from 'lucide-react/dynamicIconImports';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { IconPicker } from "@/components/ui/icon-picker";
+import type dynamicIconImports from "lucide-react/dynamicIconImports";
 
 type IconName = keyof typeof dynamicIconImports;
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon } from "lucide-react";
 
 const collectionSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(100, 'Title must be 100 characters or less'),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(100, "Title must be 100 characters or less"),
   slug: z
     .string()
-    .min(1, 'Slug is required')
-    .max(100, 'Slug must be 100 characters or less')
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must contain only lowercase letters, numbers, and hyphens (no spaces or special characters)'),
-  icon: z.string().min(1, 'Icon is required'),
+    .min(1, "Slug is required")
+    .max(100, "Slug must be 100 characters or less")
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      "Slug must contain only lowercase letters, numbers, and hyphens (no spaces or special characters)",
+    ),
+  icon: z.string().min(1, "Icon is required"),
 });
 
 type CollectionFormData = z.infer<typeof collectionSchema>;
@@ -35,20 +40,22 @@ type CollectionFormData = z.infer<typeof collectionSchema>;
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-    .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
+    .replace(/[^a-z0-9\s-]/g, "") // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, "") // Remove leading/trailing hyphens
     .trim();
 }
 
 export function NewCollectionModal() {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const [title, setTitle] = React.useState('');
-  const [icon, setIcon] = React.useState<IconName>('zap');
-  const [error, setError] = React.useState<string | null>('');
-  const [touched, setTouched] = React.useState<Partial<Record<keyof CollectionFormData, boolean>>>({});
+  const [title, setTitle] = React.useState("");
+  const [icon, setIcon] = React.useState<IconName>("zap");
+  const [error, setError] = React.useState<string | null>("");
+  const [touched, setTouched] = React.useState<
+    Partial<Record<keyof CollectionFormData, boolean>>
+  >({});
 
   // Auto-generate slug from title
   const slug = React.useMemo(() => slugify(title), [title]);
@@ -60,10 +67,10 @@ export function NewCollectionModal() {
       if (result.success) {
         setError(null);
       } else if (result.error) {
-        setError(result.error!.issues[0].message)
+        setError(result.error!.issues[0].message);
       }
     } catch (err) {
-      console.error('Validation error:', err);
+      console.error("Validation error:", err);
     }
   }, [title, slug, icon]);
 
@@ -84,8 +91,8 @@ export function NewCollectionModal() {
     router.push(`/collections/${mockId}`);
 
     // Reset form
-    setTitle('');
-    setIcon('zap');
+    setTitle("");
+    setIcon("zap");
     setTouched({});
   };
 
@@ -117,7 +124,9 @@ export function NewCollectionModal() {
                   type="text"
                   value={title}
                   onInput={(e) => setTitle(e.currentTarget.value)}
-                  onBlur={() => setTouched((prev) => ({ ...prev, title: true }))}
+                  onBlur={() =>
+                    setTouched((prev) => ({ ...prev, title: true }))
+                  }
                   placeholder="e.g., Blog Posts"
                   className="flex-1 px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-ring"
                   autoFocus

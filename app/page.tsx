@@ -6,8 +6,8 @@ export default function Home() {
     <div className="flex-1 flex items-center justify-center p-8">
       <div className="max-w-2xl text-center space-y-6">
         <div className="flex items-center justify-center gap-2">
-        <PaperclipIcon className="h-8 w-8" />
-        <h1 className="text-4xl font-bold">Paperclip OSS</h1>
+          <PaperclipIcon className="h-8 w-8" />
+          <h1 className="text-4xl font-bold">Paperclip OSS</h1>
         </div>
         <p className="text-muted-foreground text-lg">
           a tiny, simple CMS UI &amp; API layer for Supabase

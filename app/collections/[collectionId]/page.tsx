@@ -1,11 +1,15 @@
-import { collections, collectionEntries } from '@/lib/mock-data';
-import { notFound } from 'next/navigation';
-import { CollectionTable } from '@/components/collections/collection-table';
-import { Button } from '@/components/ui/button';
-import { PlusIcon, ArrowLeftIcon, SettingsIcon } from 'lucide-react';
-import Link from 'next/link';
+import { collections, collectionEntries } from "@/lib/mock-data";
+import { notFound } from "next/navigation";
+import { CollectionTable } from "@/components/collections/collection-table";
+import { Button } from "@/components/ui/button";
+import { PlusIcon, ArrowLeftIcon, SettingsIcon } from "lucide-react";
+import Link from "next/link";
 
-export default async function CollectionPage({ params }: { params: Promise<{ collectionId: string }> }) {
+export default async function CollectionPage({
+  params,
+}: {
+  params: Promise<{ collectionId: string }>;
+}) {
   const { collectionId } = await params;
   const collection = collections.find((c) => c.id === collectionId);
 
@@ -27,22 +31,33 @@ export default async function CollectionPage({ params }: { params: Promise<{ col
           </Link>
 
           {/* Desktop: Breadcrumb */}
-          <Link href="/collections" className="hidden md:block text-3xl font-bold text-muted-foreground hover:text-foreground transition-colors shrink-0">
+          <Link
+            href="/collections"
+            className="hidden md:block text-3xl font-bold text-muted-foreground hover:text-foreground transition-colors shrink-0"
+          >
             Collections
           </Link>
-          <span className="hidden md:block text-3xl font-bold text-muted-foreground shrink-0">/</span>
+          <span className="hidden md:block text-3xl font-bold text-muted-foreground shrink-0">
+            /
+          </span>
           <h1 className="text-3xl font-bold truncate">{collection.name}</h1>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <Button asChild variant="secondary">
-            <Link href={`/collections/${collectionId}/new`} className="flex items-center gap-2">
+            <Link
+              href={`/collections/${collectionId}/new`}
+              className="flex items-center gap-2"
+            >
               <PlusIcon className="size-4" />
               <span className="hidden md:inline">New Entry</span>
             </Link>
           </Button>
           <Button asChild variant="secondary">
-            <Link href={`/collections/${collectionId}/edit`} className="flex items-center gap-2">
+            <Link
+              href={`/collections/${collectionId}/edit`}
+              className="flex items-center gap-2"
+            >
               <SettingsIcon className="size-4" />
               <span className="hidden md:inline">Edit Collection</span>
             </Link>

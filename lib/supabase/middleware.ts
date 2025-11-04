@@ -47,13 +47,11 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  const protectedPaths = [
-    '/collections',
-    '/docs',
-    '/settings',
-  ];
+  const protectedPaths = ["/collections", "/docs", "/settings"];
 
-  const isProtectedPath = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path));
+  const isProtectedPath = protectedPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path),
+  );
 
   if (!user && isProtectedPath) {
     const url = request.nextUrl.clone();
@@ -61,10 +59,11 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && (
-    request.nextUrl.pathname.startsWith('/auth')
-    || request.nextUrl.pathname.startsWith('/setup')
-  )) {
+  if (
+    user &&
+    (request.nextUrl.pathname.startsWith("/auth") ||
+      request.nextUrl.pathname.startsWith("/setup"))
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/collections";
     return NextResponse.redirect(url);

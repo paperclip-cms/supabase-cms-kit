@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { CogIcon, FolderIcon, NotebookIcon } from 'lucide-react';
+import Link from "next/link";
+import { CogIcon, FolderIcon, NotebookIcon } from "lucide-react";
 
 export default function NavPage() {
   return (

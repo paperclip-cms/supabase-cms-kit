@@ -1,7 +1,7 @@
-import { collections } from '@/lib/mock-data';
-import { CollectionCard } from '@/components/collections/collection-card';
-import { CollectionsEmptyState } from '@/components/collections/empty-state';
-import { NewCollectionModal } from '@/components/collections/new-collection-modal';
+import { collections } from "@/lib/mock-data";
+import { CollectionCard } from "@/components/collections/collection-card";
+import { CollectionsEmptyState } from "@/components/collections/empty-state";
+import { NewCollectionModal } from "@/components/collections/new-collection-modal";
 
 export default function CollectionsPage() {
   const hasCollections = collections.length > 0;

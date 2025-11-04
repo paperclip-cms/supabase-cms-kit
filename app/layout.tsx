@@ -29,11 +29,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-[#f5f5f5] dark:bg-[#0a0a0a]`}>
+      <body
+        className={`${inter.variable} font-sans antialiased bg-[#f5f5f5] dark:bg-[#0a0a0a]`}
+      >
         <ThemeProvider attribute="class" defaultTheme="dark">
-          <MainLayout header={<Header />}>
-            {children}
-          </MainLayout>
+          <MainLayout header={<Header />}>{children}</MainLayout>
           <Toaster />
         </ThemeProvider>
       </body>

@@ -1,16 +1,20 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Collection } from '@/lib/mock-data';
-import { formatDistanceToNow } from 'date-fns';
-import * as Icons from 'lucide-react';
+import Link from "next/link";
+import { Collection } from "@/lib/mock-data";
+import { formatDistanceToNow } from "date-fns";
+import * as Icons from "lucide-react";
 
 interface CollectionCardProps {
   collection: Collection;
 }
 
 export function CollectionCard({ collection }: CollectionCardProps) {
-  const timeAgo = formatDistanceToNow(collection.lastUpdated, { addSuffix: true });
+  const timeAgo = formatDistanceToNow(collection.lastUpdated, {
+    addSuffix: true,
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Icon = (Icons as any)[collection.icon] || Icons.FolderIcon;
 
   return (
@@ -28,11 +32,13 @@ export function CollectionCard({ collection }: CollectionCardProps) {
 
         <div className="space-y-1 text-sm text-muted-foreground mb-3 flex-1">
           <div>
-            {collection.entryCount} {collection.entryCount === 1 ? 'entry' : 'entries'}
+            {collection.entryCount}{" "}
+            {collection.entryCount === 1 ? "entry" : "entries"}
           </div>
           {collection.draftCount > 0 ? (
             <div>
-              {collection.draftCount} {collection.draftCount === 1 ? 'draft' : 'drafts'}
+              {collection.draftCount}{" "}
+              {collection.draftCount === 1 ? "draft" : "drafts"}
             </div>
           ) : (
             <div className="text-transparent select-none">All published</div>

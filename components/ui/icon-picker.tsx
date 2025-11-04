@@ -1,38 +1,38 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { DynamicIcon } from 'lucide-react/dynamic';
-import dynamicIconImports from 'lucide-react/dynamicIconImports';
-import { Button } from '@/components/ui/button';
+import * as React from "react";
+import { DynamicIcon } from "lucide-react/dynamic";
+import dynamicIconImports from "lucide-react/dynamicIconImports";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
-import { slugify } from '../collections/new-collection-modal';
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { slugify } from "../collections/new-collection-modal";
 
 type IconName = keyof typeof dynamicIconImports;
 
 const popularIcons: IconName[] = [
-  'file-text',
-  'file',
-  'folder',
-  'book-open',
-  'newspaper',
-  'image',
-  'shopping-cart',
-  'music',
-  'star',
-  'heart',
-  'calendar',
-  'package',
-  'message-square',
-  'mail',
-  'lightbulb',
-  'zap',
-  'pencil',
-  'camera',
+  "file-text",
+  "file",
+  "folder",
+  "book-open",
+  "newspaper",
+  "image",
+  "shopping-cart",
+  "music",
+  "star",
+  "heart",
+  "calendar",
+  "package",
+  "message-square",
+  "mail",
+  "lightbulb",
+  "zap",
+  "pencil",
+  "camera",
 ];
 
 const allIconNames = Object.keys(dynamicIconImports) as IconName[];
@@ -43,7 +43,7 @@ interface IconPickerProps {
 }
 
 export function IconPicker({ value, onChange }: IconPickerProps) {
-  const [search, setSearch] = React.useState('');
+  const [search, setSearch] = React.useState("");
   const [open, setOpen] = React.useState(false);
 
   const filteredIcons = React.useMemo(() => {
@@ -51,15 +51,17 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
       return popularIcons;
     }
 
-    const searchNormalizaed = slugify(search)
+    const searchNormalizaed = slugify(search);
 
     return allIconNames
       .filter((name) => name.includes(searchNormalizaed))
       .sort((a, b) => {
         if (a === searchNormalizaed) return -1;
         if (b === searchNormalizaed) return 1;
-        if (a.startsWith(searchNormalizaed) && !b.startsWith(searchNormalizaed)) return -1;
-        if (b.startsWith(searchNormalizaed) && !a.startsWith(searchNormalizaed)) return 1;
+        if (a.startsWith(searchNormalizaed) && !b.startsWith(searchNormalizaed))
+          return -1;
+        if (b.startsWith(searchNormalizaed) && !a.startsWith(searchNormalizaed))
+          return 1;
         return a.localeCompare(b);
       });
   }, [search]);
@@ -67,10 +69,7 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          className="justify-center size-9 p-0"
-        >
+        <Button variant="outline" className="justify-center size-9 p-0">
           <DynamicIcon name={value} className="size-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -93,11 +92,11 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
                   onClick={() => {
                     onChange(iconName);
                     setOpen(false);
-                    setSearch('');
+                    setSearch("");
                   }}
                   className={cn(
-                    'flex items-center justify-center p-2 rounded-md hover:bg-accent transition-colors',
-                    value === iconName && 'bg-accent'
+                    "flex items-center justify-center p-2 rounded-md hover:bg-accent transition-colors",
+                    value === iconName && "bg-accent",
                   )}
                   title={iconName}
                 >
@@ -114,7 +113,7 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
         </div>
         <div className="p-2 border-t bg-muted/50">
           <p className="text-xs text-muted-foreground text-center">
-            browse all icons at{' '}
+            browse all icons at{" "}
             <a
               href="https://lucide.dev/icons"
               target="_blank"

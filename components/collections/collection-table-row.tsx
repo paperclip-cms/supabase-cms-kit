@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { CollectionEntry } from '@/lib/mock-data';
-import { cn } from '@/lib/utils';
-import { formatDistanceToNow } from 'date-fns';
-import { MoreVerticalIcon } from 'lucide-react';
-import { useRouter, usePathname } from 'next/navigation';
+import * as React from "react";
+import { CollectionEntry } from "@/lib/mock-data";
+import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
+import { MoreVerticalIcon } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface CollectionTableRowProps {
   entry: CollectionEntry;
@@ -23,14 +23,14 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const getStatusColor = (status: CollectionEntry['status']) => {
+  const getStatusColor = (status: CollectionEntry["status"]) => {
     switch (status) {
-      case 'published':
-        return 'bg-green-500/10 text-green-600 dark:text-green-400';
-      case 'draft':
-        return 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400';
-      case 'archived':
-        return 'bg-gray-500/10 text-gray-600 dark:text-gray-400';
+      case "published":
+        return "bg-green-500/10 text-green-600 dark:text-green-400";
+      case "draft":
+        return "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400";
+      case "archived":
+        return "bg-gray-500/10 text-gray-600 dark:text-gray-400";
     }
   };
 
@@ -44,19 +44,19 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
 
   const handleDuplicate = () => {
     // TODO: Implement duplicate logic
-    console.log('Duplicate:', entry.id);
+    console.log("Duplicate:", entry.id);
   };
 
   const handleDelete = () => {
     // TODO: Implement delete logic
-    console.log('Delete:', entry.id);
+    console.log("Delete:", entry.id);
   };
 
   return (
     <div
       className={cn(
         "w-full flex items-center py-3 px-6 border-b border-muted-foreground/5 text-sm cursor-pointer group hover:bg-accent",
-        isOpen && "bg-accent"
+        isOpen && "bg-accent",
       )}
       onClick={handleRowClick}
     >
@@ -75,10 +75,10 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
           {/* Status Dot */}
           <div
             className={cn(
-              'size-2 rounded-full',
-              entry.status === 'published' && 'bg-green-500',
-              entry.status === 'draft' && 'bg-yellow-500',
-              entry.status === 'archived' && 'bg-gray-500'
+              "size-2 rounded-full",
+              entry.status === "published" && "bg-green-500",
+              entry.status === "draft" && "bg-yellow-500",
+              entry.status === "archived" && "bg-gray-500",
             )}
             title={entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
           />
@@ -86,13 +86,22 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
           {/* Actions - always visible on mobile */}
           <DropdownMenu onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" size="icon" className="h-7 w-7 focus-visible:ring-0 focus-visible:ring-offset-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 focus-visible:ring-0 focus-visible:ring-offset-0"
+              >
                 <MoreVerticalIcon className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuContent
+              align="end"
+              onClick={(e) => e.stopPropagation()}
+            >
               <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDuplicate}>Duplicate</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDuplicate}>
+                Duplicate
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleDelete} variant="destructive">
                 Delete
               </DropdownMenuItem>
@@ -114,8 +123,8 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
         <div className="w-[20%] xl:w-[15%] pl-2">
           <span
             className={cn(
-              'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
-              getStatusColor(entry.status)
+              "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+              getStatusColor(entry.status),
             )}
           >
             {entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
@@ -136,16 +145,30 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
           </span>
 
           {/* Actions Menu - visible on hover on desktop */}
-          <div className={cn("opacity-0 group-hover:opacity-100", isOpen && "opacity-100")}>
+          <div
+            className={cn(
+              "opacity-0 group-hover:opacity-100",
+              isOpen && "opacity-100",
+            )}
+          >
             <DropdownMenu onOpenChange={setIsOpen}>
               <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <Button variant="ghost" size="icon" className="h-7 w-7 focus-visible:ring-0 focus-visible:ring-offset-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 focus-visible:ring-0 focus-visible:ring-offset-0"
+                >
                   <MoreVerticalIcon className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuContent
+                align="end"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDuplicate}>Duplicate</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDuplicate}>
+                  Duplicate
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleDelete} variant="destructive">
                   Delete
                 </DropdownMenuItem>

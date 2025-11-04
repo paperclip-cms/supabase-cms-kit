@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { CollectionEntry } from '@/lib/mock-data';
-import { CollectionTableRow } from './collection-table-row';
+import { CollectionEntry } from "@/lib/mock-data";
+import { CollectionTableRow } from "./collection-table-row";
 
 interface CollectionTableProps {
   entries: CollectionEntry[];
