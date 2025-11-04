@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { OnboardingProvider } from "@/lib/contexts/onboarding-context";
 import { Toaster } from "@/components/ui/sonner";
 import MainLayout from "@/components/layout/main-layout";
 import Header from "@/components/layout/header";
@@ -39,8 +40,10 @@ export default function RootLayout({
         className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-[#f5f5f5] dark:bg-[#0a0a0a]`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark">
-          <MainLayout header={<Header />}>{children}</MainLayout>
-          <Toaster />
+          <OnboardingProvider>
+            <MainLayout header={<Header />}>{children}</MainLayout>
+            <Toaster />
+          </OnboardingProvider>
         </ThemeProvider>
       </body>
     </html>

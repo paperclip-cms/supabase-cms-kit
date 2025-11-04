@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useOnboarding } from "@/lib/contexts/onboarding-context";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,23 +19,8 @@ import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
-  const [onboardingComplete, setOnboardingComplete] = React.useState(true);
-
-  React.useEffect(() => {
-    const checkOnboarding = async () => {
-      try {
-        const response = await fetch("/api/onboarding/status");
-        const data = await response.json();
-        setOnboardingComplete(data.complete);
-      } catch (error) {
-        console.error("Failed to check onboarding status:", error);
-        // Assume complete on error to avoid hiding navigation
-        setOnboardingComplete(true);
-      }
-    };
-
-    checkOnboarding();
-  }, []);
+  const { status } = useOnboarding();
+  const onboardingComplete = status?.complete ?? true;
 
   const navContent = (
     <>
