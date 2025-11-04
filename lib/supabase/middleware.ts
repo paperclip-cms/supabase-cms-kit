@@ -70,7 +70,7 @@ export async function updateSession(request: NextRequest) {
   if (
     user &&
     (request.nextUrl.pathname.startsWith("/auth") ||
-      request.nextUrl.pathname.startsWith("/setup"))
+      request.nextUrl.pathname.startsWith("/onboarding"))
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/collections";
