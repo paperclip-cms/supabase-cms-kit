@@ -1,13 +1,30 @@
-import { PaperclipIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   return (
     <div className="flex-1 flex items-center justify-center p-8">
       <div className="max-w-2xl text-center space-y-6">
-        <div className="flex items-center justify-center gap-2">
-          <PaperclipIcon className="h-8 w-8" />
-          <h1 className="text-4xl font-bold">Paperclip OSS</h1>
+        <div className="flex items-center justify-center gap-3">
+          <Image
+            src="/brand/paperclip_logo.svg"
+            alt="Paperclip"
+            width={180}
+            height={36}
+            className="h-10 w-auto dark:hidden"
+            priority
+          />
+          <Image
+            src="/brand/paperclip_logo_white.svg"
+            alt="Paperclip"
+            width={180}
+            height={36}
+            className="h-10 w-auto hidden dark:block"
+            priority
+          />
+          <span className="text-[11px] font-mono font-semibold px-2 py-1 bg-accent/80 dark:bg-accent/40 text-foreground border border-border tracking-wider">
+            OSS
+          </span>
         </div>
         <p className="text-muted-foreground text-lg">
           a tiny, simple CMS UI &amp; API layer for Supabase

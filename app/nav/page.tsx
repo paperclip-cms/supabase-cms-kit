@@ -11,7 +11,7 @@ export default function NavPage() {
         <div className="flex items-center justify-center w-16 bg-muted/50 border-r border-border group-hover:bg-muted transition-colors">
           <FolderIcon className="w-5 h-5" />
         </div>
-        <div className="flex-1 flex items-center justify-center py-6 text-lg font-medium">
+        <div className="flex-1 flex items-center justify-center py-6 text-lg font-medium font-heading">
           Collections
         </div>
       </Link>
@@ -22,7 +22,7 @@ export default function NavPage() {
         <div className="flex items-center justify-center w-16 bg-muted/50 border-r border-border group-hover:bg-muted transition-colors">
           <CogIcon className="w-5 h-5" />
         </div>
-        <div className="flex-1 flex items-center justify-center py-6 text-lg font-medium">
+        <div className="flex-1 flex items-center justify-center py-6 text-lg font-medium font-heading">
           Settings
         </div>
       </Link>
@@ -33,7 +33,7 @@ export default function NavPage() {
         <div className="flex items-center justify-center w-16 bg-muted/50 border-r border-border group-hover:bg-muted transition-colors">
           <NotebookIcon className="w-5 h-5" />
         </div>
-        <div className="flex-1 flex items-center justify-center py-6 text-lg font-medium">
+        <div className="flex-1 flex items-center justify-center py-6 text-lg font-medium font-heading">
           Docs
         </div>
       </Link>

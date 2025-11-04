@@ -1,28 +1,35 @@
 # Manual Setup
+
 If you'd prefer to set things up manually - without the setup wizard - follow these steps:
 
 ### Fork the repo
+
 [Click here](https://github.com/paperclip-cms/supabase-cms-kit/fork) to fork this repository.
 
 or, fork with the GitHub CLI:
+
 ```bash
 gh repo fork paperclip-cms/supabase-cms-kit
 ```
 
 Clone the repository to your local machine:
+
 ```
 git clone https://github.com/you/your-fork.git
 ```
 
 ### Create a new Supabase project
+
 Paperclip OSS works by using a Supabase project as the backend for your CMS. Create a new project here: https://supabase.com
 
 Once your project is created, find and take note of these three values:
+
 1. Project URL ([here](https://supabase.com/dashboard/project/_/settings/api))
 1. Publishable key (generate one [here](https://supabase.com/dashboard/project/_/settings/api-keys/new))
 1. Service role key (generate one [here](https://supabase.com/dashboard/project/_/settings/api-keys/new))
 
 ### Run the Supabase migrations
+
 Paperclip creates several tables and functions in your Supabase project.
 
 Use the [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started?queryGroups=platform&platform=macos) to run the Paperclip database migrations:
@@ -41,11 +48,13 @@ supabase db push
 ### Update environment variables
 
 Copy the sample into your own file:
+
 ```bash
 cp .env.example .env
 ```
 
 Update the variables with values from your Supabase project:
+
 ```
 NEXT_PUBLIC_SUPABASE_URL=your-project-url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-or-anon-key
@@ -62,6 +71,7 @@ Your service role key is only used for admin account setup. If you do not feel c
 ### Start the server
 
 Start the development server:
+
 ```bash
 npm run dev
 ```

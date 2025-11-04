@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import MainLayout from "@/components/layout/main-layout";
@@ -22,6 +22,12 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const outfit = Outfit({
+  variable: "--font-outfit",
+  display: "swap",
+  subsets: ["latin"],
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} font-sans antialiased bg-[#f5f5f5] dark:bg-[#0a0a0a]`}
+        className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-[#f5f5f5] dark:bg-[#0a0a0a]`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark">
           <MainLayout header={<Header />}>{children}</MainLayout>

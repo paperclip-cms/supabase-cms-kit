@@ -33,14 +33,16 @@ export default async function CollectionPage({
           {/* Desktop: Breadcrumb */}
           <Link
             href="/collections"
-            className="hidden md:block text-3xl font-bold text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            className="hidden md:block text-3xl font-bold font-heading text-muted-foreground hover:text-foreground transition-colors shrink-0"
           >
             Collections
           </Link>
-          <span className="hidden md:block text-3xl font-bold text-muted-foreground shrink-0">
+          <span className="hidden md:block text-3xl font-bold font-heading text-muted-foreground shrink-0">
             /
           </span>
-          <h1 className="text-3xl font-bold truncate">{collection.name}</h1>
+          <h1 className="text-3xl font-bold font-heading truncate">
+            {collection.name}
+          </h1>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
