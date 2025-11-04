@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,23 @@ import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
+  const [onboardingComplete, setOnboardingComplete] = React.useState(true);
+
+  React.useEffect(() => {
+    const checkOnboarding = async () => {
+      try {
+        const response = await fetch("/api/onboarding/status");
+        const data = await response.json();
+        setOnboardingComplete(data.complete);
+      } catch (error) {
+        console.error("Failed to check onboarding status:", error);
+        // Assume complete on error to avoid hiding navigation
+        setOnboardingComplete(true);
+      }
+    };
+
+    checkOnboarding();
+  }, []);
 
   const navContent = (
     <>
@@ -97,7 +115,9 @@ export default function Header() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1">{navContent}</nav>
+        {onboardingComplete && (
+          <nav className="hidden md:flex items-center gap-1">{navContent}</nav>
+        )}
       </div>
 
       {/* Right: Theme toggle + Mobile Menu */}
@@ -105,12 +125,14 @@ export default function Header() {
         <ThemeToggle />
 
         {/* Mobile Menu Button */}
-        <Button variant="ghost" size="icon" className="md:hidden" asChild>
-          <Link href="/nav">
-            <MenuIcon className="h-5 w-5" />
-            <span className="sr-only">Navigation</span>
-          </Link>
-        </Button>
+        {onboardingComplete && (
+          <Button variant="ghost" size="icon" className="md:hidden" asChild>
+            <Link href="/nav">
+              <MenuIcon className="h-5 w-5" />
+              <span className="sr-only">Navigation</span>
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );
