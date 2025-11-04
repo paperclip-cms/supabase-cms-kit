@@ -24,9 +24,9 @@ npm run dev
 
 Visit `http://localhost:3000` (check terminal output for the correct URL), and follow the setup wizard's instructions. It will guide you through:
 
-1. Creating a Supabase account
-2. Running migrations
-3. Setting your environment variables
+1. Creating a Supabase project
+2. Setting your environment variables
+3. Running migrations
 4. Create your first CMS user
 
 If you'd prefer to set things up manually, or want deeper instructions, see [MANUAL_SETUP.md](./MANUAL_SETUP.md)
