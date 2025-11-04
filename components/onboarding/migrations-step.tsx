@@ -35,6 +35,7 @@ export function MigrationsStep({ onNext, isComplete }: MigrationsStepProps) {
         );
       }
     } catch (err) {
+      console.error(err);
       setError("Failed to check migrations. Please try again.");
     } finally {
       setIsChecking(false);
@@ -86,9 +87,33 @@ export function MigrationsStep({ onNext, isComplete }: MigrationsStepProps) {
               1
             </div>
             <div className="flex-1 space-y-3">
-              <p className="font-medium">
-                Link your local project to Supabase
+              <p className="font-medium">Log in to the Supabase CLI</p>
+              <p className="text-sm text-muted-foreground">
+                Run the following command in your terminal:
               </p>
+              <div className="relative">
+                <pre className="bg-background border rounded-md p-3 text-xs overflow-x-auto">
+                  npx supabase login
+                </pre>
+                <button
+                  onClick={() => copyToClipboard("npx supabase login")}
+                  className="absolute top-1/2 -translate-y-1/2 right-2 p-1.5 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+                  title="Copy to clipboard"
+                >
+                  <Copy className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+          <div className="flex items-start gap-3">
+            <div className="w-6 h-6 rounded-full bg-purple/20 text-purple flex items-center justify-center flex-shrink-0 mt-0.5 text-sm font-semibold">
+              2
+            </div>
+            <div className="flex-1 space-y-3">
+              <p className="font-medium">Link your local project to Supabase</p>
               <p className="text-sm text-muted-foreground">
                 Run the following command in your terminal:
               </p>
@@ -98,15 +123,23 @@ export function MigrationsStep({ onNext, isComplete }: MigrationsStepProps) {
                 </pre>
                 <button
                   onClick={() => copyToClipboard("npx supabase link")}
-                  className="absolute top-2 right-2 p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+                  className="absolute top-1/2 -translate-y-1/2 right-2 p-1.5 rounded-md bg-muted hover:bg-muted/80 transition-colors"
                   title="Copy to clipboard"
                 >
                   <Copy className="w-4 h-4" />
                 </button>
               </div>
               <p className="text-sm text-muted-foreground">
-                You'll need your project reference ID from the Supabase
-                dashboard
+                You&apos;ll need your project reference ID from the{" "}
+                <a
+                  href="https://supabase.com/dashboard/project/_/settings/api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-purple hover:underline"
+                >
+                  Supabase dashboard
+                  <ExternalLink className="w-4 h-4" />
+                </a>
               </p>
             </div>
           </div>
@@ -115,7 +148,7 @@ export function MigrationsStep({ onNext, isComplete }: MigrationsStepProps) {
         <div className="bg-muted/50 rounded-lg p-4 space-y-3">
           <div className="flex items-start gap-3">
             <div className="w-6 h-6 rounded-full bg-purple/20 text-purple flex items-center justify-center flex-shrink-0 mt-0.5 text-sm font-semibold">
-              2
+              3
             </div>
             <div className="flex-1 space-y-3">
               <p className="font-medium">Push migrations to your database</p>
@@ -128,14 +161,26 @@ export function MigrationsStep({ onNext, isComplete }: MigrationsStepProps) {
                 </pre>
                 <button
                   onClick={() => copyToClipboard("npx supabase db push")}
-                  className="absolute top-2 right-2 p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+                  className="absolute top-1/2 -translate-y-1/2 right-2 p-1.5 rounded-md bg-muted hover:bg-muted/80 transition-colors"
                   title="Copy to clipboard"
                 >
                   <Copy className="w-4 h-4" />
                 </button>
               </div>
               <p className="text-sm text-muted-foreground">
-                This will create the collections, items, and profiles tables
+                This will create the <code>collections</code>,{" "}
+                <code>items</code>, and <code>profiles</code> tables, along with
+                some required functions and indexes. See the{" "}
+                <a
+                  href="https://github.com/paperclip-cms/supabase-cms-kit/tree/main/supabase/migrations"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-purple hover:underline"
+                >
+                  migrations files
+                  <ExternalLink className="w-4 h-4" />
+                </a>{" "}
+                for more info.
               </p>
             </div>
           </div>

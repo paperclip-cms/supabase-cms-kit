@@ -75,7 +75,9 @@ export function FirstUserStep({ onNext, isComplete }: FirstUserStepProps) {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple/10 mb-2">
             <CheckCircle2 className="w-6 h-6 text-purple" />
           </div>
-          <h2 className="text-2xl font-heading font-bold">Admin User Created</h2>
+          <h2 className="text-2xl font-heading font-bold">
+            Admin User Created
+          </h2>
           <p className="text-muted-foreground">
             Your admin account is ready to use
           </p>

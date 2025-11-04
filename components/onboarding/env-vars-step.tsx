@@ -2,7 +2,21 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Copy, ExternalLink, AlertCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  Copy,
+  ExternalLink,
+  AlertCircle,
+  Info,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 type EnvVarsStepProps = {
   onNext: () => void;
@@ -25,10 +39,11 @@ export function EnvVarsStep({ onNext, isComplete }: EnvVarsStepProps) {
         onNext();
       } else {
         setError(
-          "Environment variables not detected. Please restart your development server after updating the .env file.",
+          "Environment variables not detected. Please confirm, or try restarting your development.",
         );
       }
     } catch (err) {
+      console.error(err);
       setError("Failed to check environment variables. Please try again.");
     } finally {
       setIsChecking(false);
@@ -65,9 +80,7 @@ export function EnvVarsStep({ onNext, isComplete }: EnvVarsStepProps) {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-heading font-bold">
-          Connect to Supabase
-        </h2>
+        <h2 className="text-2xl font-heading font-bold">Connect to Supabase</h2>
         <p className="text-muted-foreground">
           Set up your environment variables to connect to your Supabase project
         </p>
@@ -81,13 +94,13 @@ export function EnvVarsStep({ onNext, isComplete }: EnvVarsStepProps) {
             </div>
             <div className="flex-1 space-y-2">
               <p className="font-medium">
-                Create a Supabase project (if you haven't already)
+                Create a Supabase project (if you haven&apos;t already)
               </p>
               <a
                 href="https://supabase.com/dashboard/new"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-purple hover:underline"
+                className="inline-flex items-center gap-1 text-sm text-purple hover:underline"
               >
                 Open Supabase Dashboard
                 <ExternalLink className="w-4 h-4" />
@@ -102,19 +115,30 @@ export function EnvVarsStep({ onNext, isComplete }: EnvVarsStepProps) {
               2
             </div>
             <div className="flex-1 space-y-2">
-              <p className="font-medium">Get your API keys</p>
+              <p className="font-medium">Get your Project URL &amp; API keys</p>
               <p className="text-sm text-muted-foreground">
-                Go to Project Settings → API in your Supabase dashboard
+                Go to Project Settings in your Supabase dashboard
               </p>
-              <a
-                href="https://supabase.com/dashboard/project/_/settings/api"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-purple hover:underline"
-              >
-                Open API Settings
-                <ExternalLink className="w-4 h-4" />
-              </a>
+              <div className="flex flex-col">
+                <a
+                  href="https://supabase.com/dashboard/project/_/settings/api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-purple hover:underline"
+                >
+                  Open API Settings for Project URL
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://supabase.com/dashboard/project/_/settings/api-keys/new"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-purple hover:underline"
+                >
+                  Create new API Keys
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -125,10 +149,27 @@ export function EnvVarsStep({ onNext, isComplete }: EnvVarsStepProps) {
               3
             </div>
             <div className="flex-1 space-y-3">
-              <p className="font-medium">Create a .env file</p>
+              <p className="font-medium">
+                Create a <code>.env</code> file
+              </p>
               <p className="text-sm text-muted-foreground">
-                In your project root, create a <code>.env</code> file with the
-                following:
+                Copy the <code>.env.example</code> file into a new{" "}
+                <code>.env</code> file:
+              </p>
+              <div className="relative">
+                <pre className="bg-background border rounded-md p-3 text-xs overflow-x-auto">
+                  {`cp .env.example .env`}
+                </pre>
+                <button
+                  onClick={() => copyToClipboard(`cp .env.example .env`)}
+                  className="absolute top-1/2 -translate-y-1/2 right-2 p-1.5 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+                  title="Copy to clipboard"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Fill in the values with your URL &amp; API Keys from Supabase:
               </p>
               <div className="relative">
                 <pre className="bg-background border rounded-md p-3 text-xs overflow-x-auto">
@@ -142,30 +183,96 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key`}
                       `NEXT_PUBLIC_SUPABASE_URL=your-project-url\nNEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-anon-key\nSUPABASE_SERVICE_ROLE_KEY=your-service-role-key`,
                     )
                   }
-                  className="absolute top-2 right-2 p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+                  className="absolute top-2 right-2 p-1.5 rounded-md bg-muted hover:bg-muted/80 transition-colors"
                   title="Copy to clipboard"
                 >
-                  <Copy className="w-4 h-4" />
+                  <Copy className="w-3.5 h-3.5" />
                 </button>
               </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button
+                    className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    title="Why do we need the service role key?"
+                  >
+                    <Info className="w-4 h-4" />
+                    <span>Why do we need the service role key?</span>
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>
+                      Why do we need the service role key?
+                    </DialogTitle>
+                    <DialogDescription asChild>
+                      <div className="space-y-3 text-left">
+                        <p>
+                          Generally speaking, you should try to avoid use of the
+                          service role key when possible. It bypasses RLS
+                          policies in your Supabase database, and is therefore
+                          dangerous to expose to clients.
+                        </p>
+                        <p className="font-medium text-foreground">
+                          Paperclip uses this key for:
+                        </p>
+                        <ul className="space-y-2 list-disc list-inside">
+                          <li>Checking your setup progress</li>
+                          <li>Creating the first admin user</li>
+                        </ul>
+                        <p>
+                          Your service role key is only stored on your machine,
+                          never sent anywhere, and only used for the operations
+                          listed above.
+                        </p>
+                        <div className="bg-muted/50 rounded-md p-3 mt-4">
+                          <p className="text-sm font-medium text-foreground mb-2">
+                            Don&apos;t feel comfortable using this key?
+                          </p>
+                          <p className="text-sm mb-4">
+                            Feel free to revoke this key and/or remove it from
+                            your <code>.env</code> file after you&apos;ve
+                            finished creating your first user.
+                          </p>
+                          <p className="text-sm">
+                            If you don&apos;t want to use the key at all you can
+                            set up Paperclip manually, bypassing the setup
+                            wizard. See{" "}
+                            <a
+                              href="https://github.com/paperclip-cms/supabase-cms-kit/blob/main/MANUAL_SETUP.md"
+                              className="inline-flex items-center gap-1 text-sm text-purple hover:underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <code>MANUAL_SETUP.md</code>
+                              <ExternalLink className="w-4 h-4" />
+                            </a>{" "}
+                            for instructions.
+                          </p>
+                        </div>
+                      </div>
+                    </DialogDescription>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </div>
 
-        <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+        {/* <div className="bg-muted/50 rounded-lg p-4 space-y-3">
           <div className="flex items-start gap-3">
             <div className="w-6 h-6 rounded-full bg-purple/20 text-purple flex items-center justify-center flex-shrink-0 mt-0.5 text-sm font-semibold">
               4
             </div>
             <div className="flex-1 space-y-2">
-              <p className="font-medium">Restart your development server</p>
+              <p className="font-medium">Restart your development server (if needed)</p>
               <p className="text-sm text-muted-foreground">
-                Stop your server (Ctrl+C) and run <code>npm run dev</code>{" "}
-                again
+                This page should automatically refresh once you save your changes{" "}
+                to the <code>.env</code> file. If not, stop your server (<code>Ctrl+C</code>){" "}
+                and run <code>npm run dev</code> again.
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {error && (

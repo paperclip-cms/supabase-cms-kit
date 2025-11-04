@@ -12,7 +12,7 @@ export async function GET() {
     if (!hasEnvVars) {
       return NextResponse.json({
         complete: false,
-        step: "env_vars",
+        step: "welcome",
         envVarsSet: false,
         migrationsRun: false,
         userCreated: false,
@@ -24,12 +24,24 @@ export async function GET() {
     // Check 2: Migrations (check if required tables exist)
     let migrationsRun = false;
     try {
-      const { error: tablesError } = await supabase
-        .from("collections")
-        .select("id", { head: true, count: "exact" });
+      const requiredTables = ["profiles", "collections", "items"];
+      const { data, error } = await supabase
+        .from("information_schema.tables")
+        .select("table_name")
+        .eq("table_schema", "public")
+        .in("table_name", requiredTables);
 
-      migrationsRun = !tablesError;
-    } catch {
+      const foundTables = data?.map((row) => row.table_name) || [];
+      migrationsRun = !error && foundTables.length === requiredTables.length;
+
+      console.log(
+        "Migrations check - found tables:",
+        foundTables,
+        "- all present:",
+        migrationsRun,
+      );
+    } catch (error) {
+      console.error("Migration check error:", error);
       migrationsRun = false;
     }
 

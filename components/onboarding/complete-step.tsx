@@ -14,7 +14,9 @@ export function CompleteStep({ onComplete }: CompleteStepProps) {
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple/10 mb-2">
           <CheckCircle2 className="w-8 h-8 text-purple" />
         </div>
-        <h1 className="text-3xl font-heading font-bold">You're All Set!</h1>
+        <h1 className="text-3xl font-heading font-bold">
+          You&apos;re All Set!
+        </h1>
         <p className="text-muted-foreground text-lg">
           Paperclip CMS is ready to use
         </p>
@@ -30,7 +32,8 @@ export function CompleteStep({ onComplete }: CompleteStepProps) {
             <div>
               <p className="font-medium">Create your first collection</p>
               <p className="text-sm text-muted-foreground">
-                Define a content type like "Blog Posts" or "Pages"
+                Define a content type like &quot;Blog Posts&quot; or
+                &quot;Pages&quot;
               </p>
             </div>
           </li>

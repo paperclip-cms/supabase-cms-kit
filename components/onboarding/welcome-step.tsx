@@ -24,7 +24,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
 
       <div className="bg-muted/50 rounded-lg p-6 space-y-4">
         <h2 className="font-heading text-lg font-semibold">
-          What you'll need:
+          What you&apos;ll need:
         </h2>
         <ul className="space-y-3">
           <li className="flex items-start gap-3">
@@ -51,7 +51,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
               2
             </div>
             <div>
-              <p className="font-medium">Your project's API keys</p>
+              <p className="font-medium">Your project&apos;s API keys</p>
               <p className="text-sm text-muted-foreground">
                 Found in Project Settings → API
               </p>
@@ -64,7 +64,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
             <div>
               <p className="font-medium">About 5 minutes</p>
               <p className="text-sm text-muted-foreground">
-                We'll guide you through the entire setup
+                We&apos;ll guide you through the entire setup
               </p>
             </div>
           </li>

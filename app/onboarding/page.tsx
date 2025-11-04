@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { CheckCircle2, Circle } from "lucide-react";
 import { useOnboarding } from "@/lib/contexts/onboarding-context";
 import { EnvVarsStep } from "@/components/onboarding/env-vars-step";
@@ -71,7 +70,13 @@ export default function OnboardingPage() {
   const getStepStatus = (stepId: string) => {
     if (!status) return "pending";
 
-    const stepOrder = ["welcome", "env_vars", "migrations", "create_user", "complete"];
+    const stepOrder = [
+      "welcome",
+      "env_vars",
+      "migrations",
+      "create_user",
+      "complete",
+    ];
     const currentIndex = stepOrder.indexOf(currentStep);
     const stepIndex = stepOrder.indexOf(stepId);
 
@@ -96,7 +101,7 @@ export default function OnboardingPage() {
       {/* Main Content */}
       <main className="flex-1 container max-w-5xl mx-auto px-6 py-12">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-12">
+        {/* <div className="flex items-center justify-center gap-2 mb-12">
           <Image
             src="/brand/paperclip_logo.svg"
             alt="Paperclip CMS"
@@ -114,7 +119,7 @@ export default function OnboardingPage() {
           <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-accent/80 dark:bg-accent/40 text-foreground border border-border tracking-wider">
             OSS
           </span>
-        </div>
+        </div> */}
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-between max-w-3xl mx-auto">
