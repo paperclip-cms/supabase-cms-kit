@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useOnboarding } from "@/lib/contexts/onboarding-context";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,6 +19,8 @@ import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
+  const { status } = useOnboarding();
+  const onboardingComplete = status?.complete ?? true;
 
   const navContent = (
     <>
@@ -97,7 +100,9 @@ export default function Header() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1">{navContent}</nav>
+        {onboardingComplete && (
+          <nav className="hidden md:flex items-center gap-1">{navContent}</nav>
+        )}
       </div>
 
       {/* Right: Theme toggle + Mobile Menu */}
@@ -105,12 +110,14 @@ export default function Header() {
         <ThemeToggle />
 
         {/* Mobile Menu Button */}
-        <Button variant="ghost" size="icon" className="md:hidden" asChild>
-          <Link href="/nav">
-            <MenuIcon className="h-5 w-5" />
-            <span className="sr-only">Navigation</span>
-          </Link>
-        </Button>
+        {onboardingComplete && (
+          <Button variant="ghost" size="icon" className="md:hidden" asChild>
+            <Link href="/nav">
+              <MenuIcon className="h-5 w-5" />
+              <span className="sr-only">Navigation</span>
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );

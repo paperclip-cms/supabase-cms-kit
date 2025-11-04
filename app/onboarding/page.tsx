@@ -4,19 +4,12 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CheckCircle2, Circle } from "lucide-react";
+import { useOnboarding } from "@/lib/contexts/onboarding-context";
 import { EnvVarsStep } from "@/components/onboarding/env-vars-step";
 import { MigrationsStep } from "@/components/onboarding/migrations-step";
 import { FirstUserStep } from "@/components/onboarding/first-user-step";
 import { WelcomeStep } from "@/components/onboarding/welcome-step";
 import { CompleteStep } from "@/components/onboarding/complete-step";
-
-type OnboardingStatus = {
-  complete: boolean;
-  step: string;
-  envVarsSet: boolean;
-  migrationsRun: boolean;
-  userCreated: boolean;
-};
 
 type Step = {
   id: string;
@@ -54,34 +47,21 @@ const steps: Step[] = [
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { status, isLoading, refetch } = useOnboarding();
   const [currentStep, setCurrentStep] = React.useState<string>("welcome");
-  const [status, setStatus] = React.useState<OnboardingStatus | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
-
-  const checkStatus = React.useCallback(async () => {
-    try {
-      const response = await fetch("/api/onboarding/status");
-      const data = await response.json();
-      setStatus(data);
-
-      if (data.complete) {
-        setCurrentStep("complete");
-      } else if (data.step) {
-        setCurrentStep(data.step);
-      }
-    } catch (error) {
-      console.error("Failed to check onboarding status:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
 
   React.useEffect(() => {
-    checkStatus();
-  }, [checkStatus]);
+    if (status) {
+      if (status.complete) {
+        setCurrentStep("complete");
+      } else if (status.step) {
+        setCurrentStep(status.step);
+      }
+    }
+  }, [status]);
 
-  const handleNext = () => {
-    checkStatus();
+  const handleNext = async () => {
+    await refetch();
   };
 
   const handleComplete = () => {
