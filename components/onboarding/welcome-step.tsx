@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import Image from "next/image";
+import { Zap, ExternalLink } from "lucide-react";
 
 type WelcomeStepProps = {
   onNext: () => void;
@@ -11,14 +12,30 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple/10 mb-2">
-          <Sparkles className="w-8 h-8 text-purple" />
+        <div className="inline-flex items-center justify-center gap-2 mb-2">
+          <Image
+            src="/brand/paperclip_logo.svg"
+            alt="Paperclip"
+            width={120}
+            height={24}
+            className="h-6 w-auto dark:hidden"
+          />
+          <Image
+            src="/brand/paperclip_logo_white.svg"
+            alt="Paperclip"
+            width={120}
+            height={24}
+            className="h-6 w-auto hidden dark:block"
+          />
+          <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-accent/80 dark:bg-accent/40 text-foreground border border-border tracking-wider">
+            OSS
+          </span>
         </div>
-        <h1 className="text-3xl font-heading font-bold">
-          Welcome to Paperclip CMS
-        </h1>
+        {/* <h1 className="text-3xl font-heading font-bold">
+          Welcome to Paperclip
+        </h1> */}
         <p className="text-muted-foreground text-lg">
-          A tiny, simple CMS built for Supabase
+          a tiny, simple open-source CMS for Supabase
         </p>
       </div>
 
@@ -70,6 +87,27 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
           </li>
         </ul>
       </div>
+
+      {/* Hosted CTA */}
+      <a
+        href="https://paperclip.dev?source=oss-onboarding"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block border border-purple/20 rounded-lg p-4 bg-purple/5 hover:bg-purple/10 hover:border-purple/30 transition-colors group"
+      >
+        <div className="flex items-start gap-3">
+          <Zap className="w-5 h-5 text-purple flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-medium mb-1">
+              Want more features with zero setup?
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Unlimited everything, plus extra features - get started in &lt;60 seconds for just $10/mo.
+            </p>
+          </div>
+          <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-purple flex-shrink-0 mt-0.5 transition-colors" />
+        </div>
+      </a>
 
       <div className="flex justify-end pt-4">
         <Button onClick={onNext} className="bg-purple hover:bg-purple/90">
