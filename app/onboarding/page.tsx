@@ -115,33 +115,33 @@ export default function OnboardingPage() {
     <div className="min-h-screen flex flex-col bg-[#f5f5f5] dark:bg-[#0a0a0a]">
       {/* Header */}
       <header className="border-b bg-background">
-        <div className="container max-w-5xl mx-auto px-6 py-4">
-          <div className="flex items-center gap-3">
+        <div className="container max-w-5xl mx-auto px-6 py-3">
+          <div className="flex items-center gap-2">
             <Image
               src="/brand/paperclip_logo.svg"
               alt="Paperclip CMS"
-              width={32}
-              height={32}
-              className="dark:hidden"
+              width={120}
+              height={24}
+              className="h-6 w-auto dark:hidden"
             />
             <Image
               src="/brand/paperclip_logo_white.svg"
               alt="Paperclip CMS"
-              width={32}
-              height={32}
-              className="hidden dark:block"
+              width={120}
+              height={24}
+              className="h-6 w-auto hidden dark:block"
             />
-            <span className="font-heading text-xl font-semibold">
-              Paperclip CMS
+            <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-accent/80 dark:bg-accent/40 text-foreground border border-border tracking-wider">
+              OSS
             </span>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 container max-w-5xl mx-auto px-6 py-12">
+      <main className="flex-1 container max-w-5xl mx-auto px-6 py-8">
         {/* Progress Steps */}
-        <div className="mb-12">
+        <div className="mb-8">
           <div className="flex items-center justify-between max-w-3xl mx-auto">
             {steps.map((step, index) => {
               const stepStatus = getStepStatus(step.id);
