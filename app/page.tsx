@@ -1,7 +1,42 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import * as React from "react";
 
 export default function Home() {
+  const router = useRouter();
+  const [isChecking, setIsChecking] = React.useState(true);
+
+  React.useEffect(() => {
+    const checkOnboarding = async () => {
+      try {
+        const response = await fetch("/api/onboarding/status");
+        const data = await response.json();
+
+        if (!data.complete) {
+          router.push("/onboarding");
+        } else {
+          setIsChecking(false);
+        }
+      } catch (error) {
+        console.error("Failed to check onboarding status:", error);
+        setIsChecking(false);
+      }
+    };
+
+    checkOnboarding();
+  }, [router]);
+
+  if (isChecking) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-purple/20 border-t-purple rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 flex items-center justify-center p-8">
       <div className="max-w-2xl text-center space-y-6">
