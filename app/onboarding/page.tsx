@@ -102,7 +102,7 @@ export default function OnboardingPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f5f5] dark:bg-[#0a0a0a]">
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-purple/20 border-t-purple rounded-full animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading...</p>
@@ -112,34 +112,29 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f5f5f5] dark:bg-[#0a0a0a]">
-      {/* Header */}
-      <header className="border-b bg-background">
-        <div className="container max-w-5xl mx-auto px-6 py-3">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/brand/paperclip_logo.svg"
-              alt="Paperclip CMS"
-              width={120}
-              height={24}
-              className="h-6 w-auto dark:hidden"
-            />
-            <Image
-              src="/brand/paperclip_logo_white.svg"
-              alt="Paperclip CMS"
-              width={120}
-              height={24}
-              className="h-6 w-auto hidden dark:block"
-            />
-            <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-accent/80 dark:bg-accent/40 text-foreground border border-border tracking-wider">
-              OSS
-            </span>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen flex flex-col bg-muted/30">
       {/* Main Content */}
-      <main className="flex-1 container max-w-5xl mx-auto px-6 py-8">
+      <main className="flex-1 container max-w-5xl mx-auto px-6 py-12">
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2 mb-12">
+          <Image
+            src="/brand/paperclip_logo.svg"
+            alt="Paperclip CMS"
+            width={120}
+            height={24}
+            className="h-6 w-auto dark:hidden"
+          />
+          <Image
+            src="/brand/paperclip_logo_white.svg"
+            alt="Paperclip CMS"
+            width={120}
+            height={24}
+            className="h-6 w-auto hidden dark:block"
+          />
+          <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-accent/80 dark:bg-accent/40 text-foreground border border-border tracking-wider">
+            OSS
+          </span>
+        </div>
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-between max-w-3xl mx-auto">
@@ -197,7 +192,7 @@ export default function OnboardingPage() {
 
         {/* Step Content */}
         <div className="max-w-2xl mx-auto">
-          <div className="border rounded-lg bg-background p-8 shadow-sm">
+          <div className="border rounded-lg bg-card p-8 shadow-sm">
             {currentStep === "welcome" && (
               <WelcomeStep onNext={() => setCurrentStep("env_vars")} />
             )}
