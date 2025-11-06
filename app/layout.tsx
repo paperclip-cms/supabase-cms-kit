@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { AuthProvider } from "@/lib/contexts/auth-context";
 import { OnboardingProvider } from "@/lib/contexts/onboarding-context";
 import { Toaster } from "@/components/ui/sonner";
 import MainLayout from "@/components/layout/main-layout";
@@ -40,10 +41,12 @@ export default function RootLayout({
         className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-[#f5f5f5] dark:bg-[#0a0a0a]`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark">
-          <OnboardingProvider>
-            <MainLayout header={<Header />}>{children}</MainLayout>
-            <Toaster />
-          </OnboardingProvider>
+          <AuthProvider>
+            <OnboardingProvider>
+              <MainLayout header={<Header />}>{children}</MainLayout>
+              <Toaster />
+            </OnboardingProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

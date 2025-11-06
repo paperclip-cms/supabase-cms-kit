@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/contexts/auth-context";
 import { useOnboarding } from "@/lib/contexts/onboarding-context";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,8 +20,10 @@ import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
+  const { user } = useAuth();
   const { status } = useOnboarding();
   const onboardingComplete = status?.complete ?? true;
+  const showNav = user && onboardingComplete;
 
   const navContent = (
     <>
@@ -100,7 +103,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop Nav */}
-        {onboardingComplete && (
+        {showNav && (
           <nav className="hidden md:flex items-center gap-1">{navContent}</nav>
         )}
       </div>
@@ -110,7 +113,7 @@ export default function Header() {
         <ThemeToggle />
 
         {/* Mobile Menu Button */}
-        {onboardingComplete && (
+        {showNav && (
           <Button variant="ghost" size="icon" className="md:hidden" asChild>
             <Link href="/nav">
               <MenuIcon className="h-5 w-5" />
