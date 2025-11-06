@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "./theme-toggle";
+import { SettingsMenu } from "./settings-menu";
 import { ChevronDownIcon, MenuIcon } from "lucide-react";
 import { collections } from "@/lib/mock-data";
 import { LogoWithBadge } from "@/components/branding/logo-with-badge";
@@ -59,15 +60,6 @@ export default function Header() {
       <Button
         variant="ghost"
         size="sm"
-        className={cn(pathname === "/settings" && "bg-accent")}
-        asChild
-      >
-        <Link href="/settings">Settings</Link>
-      </Button>
-
-      <Button
-        variant="ghost"
-        size="sm"
         className={cn(pathname === "/docs" && "bg-accent")}
         asChild
       >
@@ -90,8 +82,15 @@ export default function Header() {
         )}
       </div>
 
-      {/* Right: Theme toggle + Mobile Menu */}
+      {/* Right: Settings Menu + Theme toggle + Mobile Menu */}
       <div className="flex items-center gap-2">
+        {/* Desktop Settings Menu */}
+        {showNav && (
+          <div className="hidden md:block">
+            <SettingsMenu />
+          </div>
+        )}
+
         <ThemeToggle />
 
         {/* Mobile Menu Button */}
