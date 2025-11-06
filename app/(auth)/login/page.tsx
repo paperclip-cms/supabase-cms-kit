@@ -40,10 +40,11 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient();
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email: result.data.email,
-        password: result.data.password,
-      });
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email: result.data.email,
+          password: result.data.password,
+        });
 
       if (signInError) {
         if (signInError.message.includes("Invalid login credentials")) {
@@ -57,7 +58,9 @@ export default function LoginPage() {
       }
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to sign in. Please try again.",
+        err instanceof Error
+          ? err.message
+          : "Failed to sign in. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
