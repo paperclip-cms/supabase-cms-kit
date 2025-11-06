@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, NextRequest } from "next/server";
-import { hasEnvVars } from "../utils";
+import { hasClientEnvVars } from "../utils";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -10,10 +10,12 @@ export async function updateSession(request: NextRequest) {
   const isOnboardingPath = request.nextUrl.pathname.startsWith("/onboarding");
   const isApiRoute = request.nextUrl.pathname.startsWith("/api");
 
-  if (!hasEnvVars) {
+  // if env vars are not set, punt to onboarding
+  if (!hasClientEnvVars()) {
     if (!isOnboardingPath && !isApiRoute) {
       const url = request.nextUrl.clone();
       url.pathname = "/onboarding";
+      url.searchParams.set("error", "missing-env-vars");
       return NextResponse.redirect(url);
     }
     return supabaseResponse;

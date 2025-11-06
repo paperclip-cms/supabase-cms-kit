@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
-import { CheckCircle2, Circle } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { CheckCircle2, Circle, AlertTriangle, X } from "lucide-react";
 import { useOnboarding } from "@/lib/contexts/onboarding-context";
 import { EnvVarsStep } from "@/components/onboarding/env-vars-step";
 import { MigrationsStep } from "@/components/onboarding/migrations-step";
@@ -46,8 +46,24 @@ const steps: Step[] = [
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { status, isLoading, refetch } = useOnboarding();
   const [currentStep, setCurrentStep] = React.useState<string>("welcome");
+  const [showBanner, setShowBanner] = React.useState(false);
+  const [hasMissingEnvVarsError, setHasMissingEnvVarsError] =
+    React.useState(false);
+
+  // Capture the error state and clear the query param
+  React.useEffect(() => {
+    const hasError = searchParams.get("error") === "missing-env-vars";
+    if (hasError) {
+      setHasMissingEnvVarsError(true);
+      setShowBanner(true);
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("error");
+      router.replace(newUrl.pathname + newUrl.search);
+    }
+  }, [searchParams, router]);
 
   React.useEffect(() => {
     if (status) {
@@ -157,6 +173,56 @@ export default function OnboardingPage() {
 
         {/* Step Content */}
         <div className="max-w-2xl mx-auto">
+          {/* TODO: extract out this query-param-error logic, this is ugly */}
+          {hasMissingEnvVarsError && showBanner && (
+            <div className="mb-6 border rounded-lg bg-destructive/10 border-destructive/20 p-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="font-medium text-destructive mb-1">
+                    Did you forget environment variables?
+                  </p>
+                  <p className="text-sm text-destructive/90 mb-2">
+                    Make sure you have set these in your <code>.env</code> file
+                    or hosting provider:
+                  </p>
+                  <ul className="space-y-1 list-['-_'] list-inside text-sm mb-2">
+                    <li className="color-black">
+                      <code className="bg-destructive/20 px-1 py-0.5 rounded text-xs">
+                        NEXT_PUBLIC_SUPABASE_URL
+                      </code>
+                    </li>
+                    <li>
+                      <code className="bg-destructive/20 px-1 py-0.5 rounded text-xs">
+                        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+                      </code>
+                    </li>
+                    <li>
+                      <code className="bg-destructive/20 px-1 py-0.5 rounded text-xs">
+                        SUPABASE_SERVICE_ROLE_KEY
+                      </code>{" "}
+                      (optional)
+                    </li>
+                  </ul>
+
+                  <p className="text-sm text-destructive/90">
+                    <em>
+                      If you&apos;re still working through setup, feel free to
+                      ignore this warning.
+                    </em>
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowBanner(false)}
+                  className="p-1 hover:bg-destructive/20 rounded transition-colors"
+                  aria-label="Dismiss banner"
+                >
+                  <X className="w-4 h-4 text-destructive" />
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="border rounded-lg bg-card p-8 shadow-sm">
             {currentStep === "welcome" && (
               <WelcomeStep onNext={() => setCurrentStep("env_vars")} />

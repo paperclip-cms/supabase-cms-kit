@@ -40,7 +40,7 @@ export function EnvVarsStep({ onNext, isComplete }: EnvVarsStepProps) {
         onNext();
       } else {
         setError(
-          "Environment variables not detected. Please confirm, or try restarting your development.",
+          "Environment variables not detected. Please confirm, or try restarting your dev server.",
         );
       }
     } catch (err) {

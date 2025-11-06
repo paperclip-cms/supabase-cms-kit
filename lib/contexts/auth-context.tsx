@@ -3,7 +3,7 @@
 import * as React from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
-import { hasEnvVars } from "../utils";
+import { hasClientEnvVars } from "../utils";
 
 type AuthContextType = {
   user: User | null;
@@ -18,7 +18,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    if (!hasEnvVars) return;
+    // supabase throws errors if we try to createClient
+    // without env vars...
+    if (!hasClientEnvVars()) return;
 
     const supabase = createClient();
 
