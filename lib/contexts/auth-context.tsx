@@ -7,6 +7,7 @@ import type { User } from "@supabase/supabase-js";
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
+  signOut: () => Promise<void>;
 };
 
 const AuthContext = React.createContext<AuthContextType | null>(null);
@@ -34,8 +35,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  const signOut = React.useCallback(async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    // User state will be updated by onAuthStateChange listener
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, isLoading }}>
+    <AuthContext.Provider value={{ user, isLoading, signOut }}>
       {children}
     </AuthContext.Provider>
   );

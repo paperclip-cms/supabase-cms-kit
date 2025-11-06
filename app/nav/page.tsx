@@ -1,7 +1,18 @@
+"use client";
+
 import Link from "next/link";
-import { CogIcon, FolderIcon, NotebookIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { CogIcon, FolderIcon, NotebookIcon, LogOut } from "lucide-react";
+import { useAuth } from "@/lib/contexts/auth-context";
 
 export default function NavPage() {
+  const router = useRouter();
+  const { signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/login");
+  };
   return (
     <div className="flex flex-col items-center justify-center h-full gap-4 p-8">
       <Link
@@ -37,6 +48,13 @@ export default function NavPage() {
           Docs
         </div>
       </Link>
+      <button
+        onClick={handleSignOut}
+        className="mt-6 flex items-center gap-2 px-4 py-2 rounded-md border border-destructive/20 bg-background text-destructive hover:bg-destructive/10 transition-colors"
+      >
+        <LogOut className="w-4 h-4" />
+        <span className="text-sm font-medium">Sign out</span>
+      </button>
     </div>
   );
 }
