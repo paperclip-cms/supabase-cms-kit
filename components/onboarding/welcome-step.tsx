@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { LogoWithBadge } from "@/components/branding/logo-with-badge";
 import { Zap, ExternalLink } from "lucide-react";
 
 type WelcomeStepProps = {
@@ -12,25 +12,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center justify-center gap-2 mb-2">
-          <Image
-            src="/brand/paperclip_logo.svg"
-            alt="Paperclip"
-            width={120}
-            height={24}
-            className="h-6 w-auto dark:hidden"
-          />
-          <Image
-            src="/brand/paperclip_logo_white.svg"
-            alt="Paperclip"
-            width={120}
-            height={24}
-            className="h-6 w-auto hidden dark:block"
-          />
-          <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-accent/80 dark:bg-accent/40 text-foreground border border-border tracking-wider">
-            OSS
-          </span>
-        </div>
+        <LogoWithBadge size="sm" className="justify-center mb-2" />
         {/* <h1 className="text-3xl font-heading font-bold">
           Welcome to Paperclip
         </h1> */}
