@@ -16,7 +16,7 @@ import {
 import { ThemeToggle } from "./theme-toggle";
 import { ChevronDownIcon, MenuIcon } from "lucide-react";
 import { collections } from "@/lib/mock-data";
-import Image from "next/image";
+import { LogoWithBadge } from "@/components/branding/logo-with-badge";
 
 export default function Header() {
   const pathname = usePathname();
@@ -80,26 +80,8 @@ export default function Header() {
     <div className="w-full flex justify-between items-center border-b border-b-gray-400 dark:border-b-border h-14 px-6 bg-secondary/30 dark:bg-muted/50 relative z-50">
       {/* Left: Logo + Nav */}
       <div className="flex items-center gap-6">
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/brand/paperclip_logo.svg"
-            alt="Paperclip"
-            width={120}
-            height={24}
-            className="h-6 w-auto dark:hidden"
-            priority
-          />
-          <Image
-            src="/brand/paperclip_logo_white.svg"
-            alt="Paperclip"
-            width={120}
-            height={24}
-            className="h-6 w-auto hidden dark:block"
-            priority
-          />
-          <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-accent/80 dark:bg-accent/40 text-foreground border border-border tracking-wider">
-            OSS
-          </span>
+        <Link href="/">
+          <LogoWithBadge size="sm" priority />
         </Link>
 
         {/* Desktop Nav */}
