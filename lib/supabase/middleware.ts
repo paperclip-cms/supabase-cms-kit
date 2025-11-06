@@ -46,6 +46,7 @@ export async function updateSession(request: NextRequest) {
   const user = data?.claims;
 
   const protectedPaths = ["/collections", "/docs", "/settings"];
+  const authPaths = ["/login"];
 
   const isProtectedPath = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path),
@@ -57,10 +58,13 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  const isAuthPath = authPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path),
+  );
+
   if (
     user &&
-    (request.nextUrl.pathname.startsWith("/auth") ||
-      request.nextUrl.pathname.startsWith("/onboarding"))
+    (isAuthPath || request.nextUrl.pathname.startsWith("/onboarding"))
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/collections";

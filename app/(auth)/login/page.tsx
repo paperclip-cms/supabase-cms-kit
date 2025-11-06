@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
-import { useAuth } from "@/lib/contexts/auth-context";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -16,7 +15,6 @@ const loginSchema = z.object({
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user, isLoading: authLoading } = useAuth();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
@@ -25,13 +23,6 @@ export default function LoginPage() {
   const [validationError, setValidationError] = React.useState<string | null>(
     null,
   );
-
-  // Redirect if already logged in
-  React.useEffect(() => {
-    if (!authLoading && user) {
-      router.push("/collections");
-    }
-  }, [user, authLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +53,6 @@ export default function LoginPage() {
       }
 
       if (data.user) {
-        // Redirect will happen via useEffect when auth state updates
         router.push("/collections");
       }
     } catch (err) {
@@ -74,32 +64,12 @@ export default function LoginPage() {
     }
   };
 
-  // Show loading state while checking auth
-  if (authLoading) {
-    return (
-      <div className="min-h-full flex items-center justify-center bg-muted/30">
-        <div className="w-8 h-8 border-4 border-purple/20 border-t-purple rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  // Don't render form if already logged in
-  if (user) {
-    return null;
-  }
-
   return (
     <div className="min-h-full flex items-center justify-center bg-muted/30 p-6">
       <div className="w-full max-w-md space-y-8">
-        {/* Logo and header */}
-        <div className="text-center space-y-4">
-          <LogoWithBadge size="md" className="justify-center mb-6" />
-          <div className="space-y-2">
-            <h1 className="text-3xl font-heading font-bold">Welcome back</h1>
-            <p className="text-muted-foreground">
-              Sign in to access your CMS
-            </p>
-          </div>
+        {/* Logo */}
+        <div className="text-center">
+          <LogoWithBadge size="md" className="justify-center" />
         </div>
 
         {/* Login form */}
@@ -180,22 +150,6 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
-        </div>
-
-        {/* Footer info */}
-        <div className="bg-muted/50 border border-border rounded-lg p-4">
-          <div className="flex items-start gap-3">
-            <div className="w-5 h-5 rounded-full bg-purple/20 text-purple flex items-center justify-center flex-shrink-0 text-xs font-bold">
-              ℹ
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium">First time here?</p>
-              <p className="text-sm text-muted-foreground">
-                If you haven&apos;t set up your CMS yet, you&apos;ll need to
-                complete the onboarding process first.
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
