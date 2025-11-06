@@ -97,4 +97,4 @@ create policy profiles_self on public.profiles
 for select using (auth.uid() = id);
 
 create policy profiles_self_write on public.profiles
-for update using (auth.uid = id) with check (auth.uid() = id);
+for update using (auth.uid() = id) with check (auth.uid() = id);

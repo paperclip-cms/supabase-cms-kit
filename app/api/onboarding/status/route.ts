@@ -25,20 +25,15 @@ export async function GET() {
     let migrationsRun = false;
     try {
       const requiredTables = ["profiles", "collections", "items"];
-      const { data, error } = await supabase
-        .from("information_schema.tables")
-        .select("table_name")
-        .eq("table_schema", "public")
-        .in("table_name", requiredTables);
 
-      const foundTables = data?.map((row) => row.table_name) || [];
-      migrationsRun = !error && foundTables.length === requiredTables.length;
+      const tableChecks = await Promise.all(
+        requiredTables.map((table) =>
+          supabase.from(table).select("*").limit(1),
+        ),
+      );
 
-      console.log(
-        "Migrations check - found tables:",
-        foundTables,
-        "- all present:",
-        migrationsRun,
+      migrationsRun = !tableChecks.some(({ error }) =>
+        error?.message?.includes("Could not find the table"),
       );
     } catch (error) {
       console.error("Migration check error:", error);

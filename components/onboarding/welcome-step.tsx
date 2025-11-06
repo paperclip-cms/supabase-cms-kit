@@ -102,7 +102,8 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
               Want more features with zero setup?
             </p>
             <p className="text-sm text-muted-foreground">
-              Unlimited everything, plus extra features - get started in &lt;60 seconds for just $10/mo.
+              Unlimited everything, plus extra features - get started in &lt;60
+              seconds for just $10/mo.
             </p>
           </div>
           <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-purple flex-shrink-0 mt-0.5 transition-colors" />

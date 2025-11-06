@@ -94,16 +94,14 @@ export function EnvVarsStep({ onNext, isComplete }: EnvVarsStepProps) {
               1
             </div>
             <div className="flex-1 space-y-2 flex-col">
-              <p className="font-medium">
-                Create a new Supabase project
-              </p>
+              <p className="font-medium">Create a new Supabase project</p>
               <a
-                href="https://supabase.com/dashboard/new"
+                href="https://supabase.com/dashboard/new/_"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-sm text-purple hover:underline"
               >
-                Open Supabase Dashboard
+                Open Supabase
                 <ExternalLink className="w-4 h-4" />
               </a>
               <Dialog>
@@ -124,7 +122,12 @@ export function EnvVarsStep({ onNext, isComplete }: EnvVarsStepProps) {
                     <DialogDescription asChild>
                       <div className="space-y-3 text-left">
                         <p className="mt-2 ">
-                          We <span className="font-medium text-foreground">strongly recommend</span> creating a new Supabase project specifically for your CMS.
+                          We{" "}
+                          <span className="font-medium text-foreground">
+                            strongly recommend
+                          </span>{" "}
+                          creating a new Supabase project specifically for your
+                          CMS.
                         </p>
                         {/* <p>
                           Combining app data with CMS data can introduce issues like authentication{" "}
@@ -132,48 +135,62 @@ export function EnvVarsStep({ onNext, isComplete }: EnvVarsStepProps) {
                           rates), and more.
                         </p> */}
                         <p className="">
-                          Combining app and CMS data can introduce concerns with:
+                          Combining app and CMS data can introduce concerns
+                          with:
                         </p>
                         <ul className="space-y-2 list-disc list-inside">
-                          <li><span className="font-medium text-foreground">Authentication</span> - CMS users vs. app users</li>
-                          <li><span className="font-medium text-foreground">Scaling</span> - CMS and app likely need to scale at different rates</li>
+                          <li>
+                            <span className="font-medium text-foreground">
+                              Authentication
+                            </span>{" "}
+                            - CMS users vs. app users
+                          </li>
+                          <li>
+                            <span className="font-medium text-foreground">
+                              Scaling
+                            </span>{" "}
+                            - CMS and app likely need to scale at different
+                            rates
+                          </li>
                         </ul>
                         <p>
-                          Your CMS will probably be completely fine on the Supabase free tier for a long time.{" "}
-                          Should you need to scale beyond this, consider the{" "}
+                          Your CMS will probably be completely fine on the
+                          Supabase free tier for a long time. Should you need to
+                          scale beyond this, consider the{" "}
                           <a
-                              href="https://github.com/paperclip-cms/supabase-cms-kit/blob/main/MANUAL_SETUP.md"
-                              className="inline-flex items-center gap-1 text-sm text-purple hover:underline"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              hosted version of Paperclip
-                              <ExternalLink className="w-4 h-4" />
-                            </a>{" "}
-                            for just $10/mo.
+                            href="https://github.com/paperclip-cms/supabase-cms-kit/blob/main/MANUAL_SETUP.md"
+                            className="inline-flex items-center gap-1 text-sm text-purple hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            hosted version of Paperclip
+                            <ExternalLink className="w-4 h-4" />
+                          </a>{" "}
+                          for just $10/mo.
                         </p>
                         <div className="bg-muted/50 rounded-md p-3 mt-4">
                           <p className="text-sm font-medium text-foreground mb-2">
                             Still want to use an existing Supabase project?
                           </p>
                           <p className="text-sm mb-4">
-                            Just use the API keys &amp; URL from your existing project.{" "}
-                            However, it&apos;s up to you to manage the DB tables and authentication setup.
+                            Just use the API keys &amp; URL from your existing
+                            project. However, it&apos;s up to you to manage the
+                            DB tables and authentication setup.
                           </p>
                           <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
                             <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
                             <p className="text-sm font-medium text-destructive">
-                              If you use an existing project the setup wizard will not work, and the migrations will probably break things.
+                              If you use an existing project the setup wizard
+                              will not work, and the migrations will probably
+                              break things.
                             </p>
                           </div>
                         </div>
-
                       </div>
                     </DialogDescription>
                   </DialogHeader>
                 </DialogContent>
               </Dialog>
-
             </div>
           </div>
         </div>
@@ -313,8 +330,9 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key`}
                               <code>MANUAL_SETUP.md</code>
                               <ExternalLink className="w-4 h-4" />
                             </a>{" "}
-                            for manual setup instructions.{" "}
-                            Keep in mind the setup wizard will not work properly during manual setup.
+                            for manual setup instructions. Keep in mind the
+                            setup wizard will not work properly during manual
+                            setup.
                           </p>
                         </div>
                       </div>

@@ -186,6 +186,32 @@ export function MigrationsStep({ onNext, isComplete }: MigrationsStepProps) {
           </div>
         </div>
 
+        <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+          <div className="flex items-start gap-3">
+            <div className="w-6 h-6 rounded-full bg-purple/20 text-purple flex items-center justify-center flex-shrink-0 mt-0.5 text-sm font-semibold">
+              4
+            </div>
+            <div className="flex-1 space-y-3">
+              <p className="font-medium">Push Supabase config</p>
+              <p className="text-sm text-muted-foreground">
+                Run the following command in your terminal:
+              </p>
+              <div className="relative">
+                <pre className="bg-background border rounded-md p-3 text-xs overflow-x-auto">
+                  npx supabase config push
+                </pre>
+                <button
+                  onClick={() => copyToClipboard("npx supabase config push")}
+                  className="absolute top-1/2 -translate-y-1/2 right-2 p-1.5 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+                  title="Copy to clipboard"
+                >
+                  <Copy className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="bg-purple/10 border border-purple/20 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <div className="w-5 h-5 rounded-full bg-purple/20 text-purple flex items-center justify-center flex-shrink-0 text-xs font-bold">

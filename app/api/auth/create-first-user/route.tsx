@@ -1,4 +1,5 @@
 import { createServiceClient } from "@/lib/supabase/service";
+import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
         { status: 500 },
       );
 
+    // Create the user with the service client
     const { data: userData, error: userCreationError } =
       await supabaseServiceClient.auth.admin.createUser({
         email,
@@ -41,7 +43,26 @@ export async function POST(req: NextRequest) {
         { status: 500 },
       );
 
-    return NextResponse.json(userData);
+    // Auto-login: Sign in the user with the server client to set session cookies
+    const supabase = await createClient();
+    const { data: sessionData, error: signInError } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+    if (signInError) {
+      return NextResponse.json(
+        { error: `User created but auto-login failed: ${signInError.message}` },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({
+      user: userData,
+      session: sessionData.session,
+      message: "User created and logged in successfully",
+    });
   } catch (error) {
     console.error("Setup error:", error);
 
