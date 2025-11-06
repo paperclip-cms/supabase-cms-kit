@@ -50,14 +50,10 @@ export default function NavPage() {
       </Link>
       <button
         onClick={handleSignOut}
-        className="w-full max-w-sm flex items-stretch rounded-lg border border-border bg-background hover:bg-accent transition-colors overflow-hidden group"
+        className="mt-6 flex items-center gap-2 px-4 py-2 rounded-md border border-destructive/20 bg-background text-destructive hover:bg-destructive/10 transition-colors"
       >
-        <div className="flex items-center justify-center w-16 bg-muted/50 border-r border-border group-hover:bg-muted transition-colors">
-          <LogOut className="w-5 h-5" />
-        </div>
-        <div className="flex-1 flex items-center justify-center py-6 text-lg font-medium font-heading">
-          Sign out
-        </div>
+        <LogOut className="w-4 h-4" />
+        <span className="text-sm font-medium">Sign out</span>
       </button>
     </div>
   );
