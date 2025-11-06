@@ -24,7 +24,12 @@ export async function GET() {
     // Check 2: Migrations (check if required tables exist)
     let migrationsRun = false;
     try {
-      const requiredTables = ["profiles", "collections", "items"];
+      const requiredTables = [
+        "profiles",
+        "collections",
+        "items",
+        "paperclip_settings",
+      ];
 
       const tableChecks = await Promise.all(
         requiredTables.map((table) =>
