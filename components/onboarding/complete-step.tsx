@@ -1,13 +1,36 @@
 "use client";
 
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, ArrowRight } from "lucide-react";
+import { useOnboarding } from "@/lib/contexts/onboarding-context";
 
 type CompleteStepProps = {
   onComplete: () => void;
 };
 
 export function CompleteStep({ onComplete }: CompleteStepProps) {
+  const { telemetryEnabled } = useOnboarding();
+
+  // Persist telemetry preference to database when component loads
+  React.useEffect(() => {
+    const persistTelemetry = async () => {
+      try {
+        await fetch("/api/settings/telemetry", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ enabled: telemetryEnabled }),
+        });
+        // Clear localStorage after successful DB write
+        localStorage.removeItem("paperclip_oss_telemetry_preference");
+      } catch (error) {
+        console.error("Failed to persist telemetry preference:", error);
+      }
+    };
+
+    persistTelemetry();
+  }, [telemetryEnabled]);
+
   return (
     <div className="space-y-6">
       <div className="text-center space-y-3">

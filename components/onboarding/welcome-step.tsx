@@ -2,13 +2,25 @@
 
 import { Button } from "@/components/ui/button";
 import { LogoWithBadge } from "@/components/branding/logo-with-badge";
-import { Zap, ExternalLink } from "lucide-react";
+import { Zap, ExternalLink, Info } from "lucide-react";
+import { useOnboarding } from "@/lib/contexts/onboarding-context";
+import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 type WelcomeStepProps = {
   onNext: () => void;
 };
 
 export function WelcomeStep({ onNext }: WelcomeStepProps) {
+  const { telemetryEnabled, setTelemetryEnabled } = useOnboarding();
+
   return (
     <div className="space-y-6">
       <div className="text-center space-y-3">
@@ -91,6 +103,85 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
           <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-purple flex-shrink-0 mt-0.5 transition-colors" />
         </div>
       </a>
+
+      {/* Telemetry Opt-in */}
+      <div className="border-t pt-6">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  title="What data do we collect?"
+                >
+                  <Info className="w-4 h-4" />
+                </button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>What data do we collect?</DialogTitle>
+                  <DialogDescription asChild>
+                    <div className="space-y-3 text-left">
+                      <p className="mt-2">
+                        With your consent, we use PostHog to collect anonymous{" "}
+                        usage data to help improve Paperclip. This includes:
+                      </p>
+                      <ul className="space-y-2 list-disc list-inside">
+                        <li>Feature usage patterns (what features you use)</li>
+                        <li>Error messages and stack traces</li>
+                        <li>Performance metrics</li>
+                        <li>General system information (OS, browser)</li>
+                      </ul>
+                      <p className="font-medium text-foreground">
+                        We never collect:
+                      </p>
+                      <ul className="space-y-2 list-disc list-inside">
+                        <li>Your content or data</li>
+                        <li>Personal information</li>
+                        <li>API keys or credentials</li>
+                        <li>IP addresses</li>
+                      </ul>
+                      <div className="bg-muted/50 rounded-md p-3 mt-4">
+                        <p className="text-sm">
+                          You can change this setting anytime from the settings
+                          page. For more details,{" "}
+                          <a
+                            href="https://github.com/search?q=repo%3Apaperclip-cms%2Fsupabase-cms-kit+posthog.capture&type=code"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-purple hover:underline inline-flex items-center gap-1"
+                          >
+                            search <code>posthog.capture</code>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>{" "}
+                          to see all events we collect.
+                        </p>
+                      </div>
+                    </div>
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+            <div>
+              <label
+                htmlFor="telemetry"
+                className="text-sm font-medium cursor-pointer"
+              >
+                Anonymous telemetry
+              </label>
+              <p className="text-xs text-muted-foreground">
+                Help us improve Paperclip
+              </p>
+            </div>
+          </div>
+          <Switch
+            id="telemetry"
+            checked={telemetryEnabled}
+            onCheckedChange={setTelemetryEnabled}
+          />
+        </div>
+      </div>
 
       <div className="flex justify-end pt-4">
         <Button onClick={onNext} className="bg-purple hover:bg-purple/90">

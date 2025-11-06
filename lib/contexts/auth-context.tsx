@@ -3,6 +3,7 @@
 import * as React from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import { hasEnvVars } from "../utils";
 
 type AuthContextType = {
   user: User | null;
@@ -17,6 +18,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
+    if (!hasEnvVars) return;
+
     const supabase = createClient();
 
     // Get initial user
