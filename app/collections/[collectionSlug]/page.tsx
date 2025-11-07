@@ -1,13 +1,8 @@
-import { notFound } from "next/navigation";
 import { CollectionTable } from "@/components/collections/collection-table";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, ArrowLeftIcon, SettingsIcon } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import {
-  CollectionWithItems,
-  getCollectionWithItemsQuery,
-} from "@/lib/supabase/queries";
 
 export default async function CollectionPage({
   params,
@@ -17,19 +12,16 @@ export default async function CollectionPage({
   const { collectionSlug } = await params;
 
   const supabase = await createClient();
-  const { data, error } = await getCollectionWithItemsQuery(
-    supabase,
-    collectionSlug,
-  );
+
+  const { data: collection, error } = await supabase
+    .from("collections")
+    .select("*, items(*)")
+    .eq("slug", collectionSlug)
+    .single();
 
   if (error) {
     console.error(error);
     return <div>Error loading collection</div>;
-  }
-
-  const collection: CollectionWithItems = data;
-  if (!collection) {
-    notFound();
   }
 
   return (

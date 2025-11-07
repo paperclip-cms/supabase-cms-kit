@@ -2,6 +2,8 @@ import { QueryData } from "@supabase/supabase-js";
 import type { Database } from "./types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+// If anyone knows a better way to manage Supabase query types, let me know...
+
 export function getCollectionsQuery(supabase: SupabaseClient<Database>) {
   return supabase
     .from("collections")
@@ -23,19 +25,4 @@ export function getCollectionsQuery(supabase: SupabaseClient<Database>) {
 
 export type CollectionsWithItemMetadata = QueryData<
   ReturnType<typeof getCollectionsQuery>
->;
-
-export function getCollectionWithItemsQuery(
-  supabase: SupabaseClient<Database>,
-  collectionSlug: string,
-) {
-  return supabase
-    .from("collections")
-    .select("*, items(*)")
-    .eq("slug", collectionSlug)
-    .single();
-}
-
-export type CollectionWithItems = QueryData<
-  ReturnType<typeof getCollectionWithItemsQuery>
 >;

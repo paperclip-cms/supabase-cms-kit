@@ -2,22 +2,17 @@ import { CollectionCard } from "@/components/collections/collection-card";
 import { CollectionsEmptyState } from "@/components/collections/empty-state";
 import { NewCollectionModal } from "@/components/collections/new-collection-modal";
 import { createClient } from "@/lib/supabase/server";
-import {
-  getCollectionsQuery,
-  type CollectionsWithItemMetadata,
-} from "@/lib/supabase/queries";
+import { getCollectionsQuery } from "@/lib/supabase/queries";
 
 export default async function CollectionsPage() {
   const supabase = await createClient();
 
-  const { data, error } = await getCollectionsQuery(supabase);
+  const { data: collections, error } = await getCollectionsQuery(supabase);
 
   if (error) {
     console.error(error);
     return <div>Error loading collections</div>;
   }
-
-  const collections: CollectionsWithItemMetadata = data;
 
   if (collections.length == 0) {
     return <CollectionsEmptyState />;
