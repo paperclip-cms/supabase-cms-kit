@@ -1,23 +1,32 @@
-import { collections, collectionEntries } from "@/lib/mock-data";
 import { notFound } from "next/navigation";
 import { CollectionTable } from "@/components/collections/collection-table";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, ArrowLeftIcon, SettingsIcon } from "lucide-react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function CollectionPage({
   params,
 }: {
-  params: Promise<{ collectionId: string }>;
+  params: Promise<{ collectionSlug: string }>;
 }) {
-  const { collectionId } = await params;
-  const collection = collections.find((c) => c.id === collectionId);
+  const { collectionSlug } = await params;
+
+  const supabase = await createClient();
+  const { data: collection, error } = await supabase
+    .from("collections")
+    .select("*, items(*)")
+    .eq("slug", collectionSlug)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return <div>Error loading collection</div>;
+  }
 
   if (!collection) {
     notFound();
   }
-
-  const entries = collectionEntries[collectionId] || [];
 
   return (
     <div className="p-8">
@@ -41,14 +50,14 @@ export default async function CollectionPage({
             /
           </span>
           <h1 className="text-3xl font-bold font-heading truncate">
-            {collection.name}
+            {collection.label}
           </h1>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <Button asChild variant="secondary">
             <Link
-              href={`/collections/${collectionId}/new`}
+              href={`/collections/${collectionSlug}/new`}
               className="flex items-center gap-2"
             >
               <PlusIcon className="size-4" />
@@ -57,7 +66,7 @@ export default async function CollectionPage({
           </Button>
           <Button asChild variant="secondary">
             <Link
-              href={`/collections/${collectionId}/edit`}
+              href={`/collections/${collectionSlug}/edit`}
               className="flex items-center gap-2"
             >
               <SettingsIcon className="size-4" />
@@ -68,7 +77,7 @@ export default async function CollectionPage({
       </div>
 
       {/* Table */}
-      <CollectionTable entries={entries} />
+      <CollectionTable entries={collection.items} />
     </div>
   );
 }

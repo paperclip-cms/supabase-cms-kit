@@ -1,47 +1,61 @@
 "use client";
 
 import Link from "next/link";
-import { Collection } from "@/lib/mock-data";
 import { formatDistanceToNow } from "date-fns";
-import * as Icons from "lucide-react";
+import { DynamicIcon, IconName } from "lucide-react/dynamic";
 
 interface CollectionCardProps {
-  collection: Collection;
+  collection: {
+    id: string;
+    slug: string;
+    label: string;
+    icon: string;
+    updated_at: string;
+    items: {
+      id: string;
+      published_at?: string;
+    }[];
+  };
 }
 
 export function CollectionCard({ collection }: CollectionCardProps) {
-  const timeAgo = formatDistanceToNow(collection.lastUpdated, {
+  const timeAgo = formatDistanceToNow(collection.updated_at, {
     addSuffix: true,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const Icon = (Icons as any)[collection.icon] || Icons.FolderIcon;
+  const icon = collection.icon ?? "folder";
+
+  const publishedCount = collection.items.filter(
+    (item) => item.published_at,
+  ).length;
+  const draftCount = collection.items.filter(
+    (item) => !item.published_at,
+  ).length;
 
   return (
-    <Link href={`/collections/${collection.id}`} className="block">
+    <Link href={`/collections/${collection.slug}`} className="block">
       <div className="w-full h-full min-h-[200px] p-4 bg-background rounded-md border border-gray-300 dark:border-border/50 hover:border-gray-500 dark:hover:border-border cursor-pointer transition-colors duration-200 group flex flex-col">
         <div className="mb-3">
           <div className="size-10 rounded-md bg-muted/50 flex items-center justify-center">
-            <Icon className="size-5 text-muted-foreground" />
+            <DynamicIcon
+              name={icon as IconName}
+              className="size-5 text-muted-foreground"
+            />
           </div>
         </div>
 
         <h3 className="text-base font-semibold mb-3 group-hover:text-primary transition-colors">
-          {collection.name}
+          {collection.label}
         </h3>
 
         <div className="space-y-1 text-sm text-muted-foreground mb-3 flex-1">
           <div>
-            {collection.entryCount}{" "}
-            {collection.entryCount === 1 ? "entry" : "entries"}
+            {publishedCount} {publishedCount === 1 ? "entry" : "entries"}
           </div>
-          {collection.draftCount > 0 ? (
+          {draftCount > 0 && (
             <div>
-              {collection.draftCount}{" "}
-              {collection.draftCount === 1 ? "draft" : "drafts"}
+              {draftCount} {draftCount === 1 ? "draft" : "drafts"}
             </div>
-          ) : (
-            <div className="text-transparent select-none">All published</div>
           )}
         </div>
 

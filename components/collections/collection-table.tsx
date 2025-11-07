@@ -1,10 +1,16 @@
 "use client";
 
-import { CollectionEntry } from "@/lib/mock-data";
 import { CollectionTableRow } from "./collection-table-row";
 
 interface CollectionTableProps {
-  entries: CollectionEntry[];
+  entries: {
+    id: string;
+    slug: string;
+    title: string;
+    published_at: string | null;
+    updated_at: string;
+    created_at: string;
+  }[];
 }
 
 export function CollectionTable({ entries }: CollectionTableProps) {

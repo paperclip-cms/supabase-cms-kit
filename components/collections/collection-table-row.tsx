@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { CollectionEntry } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { MoreVerticalIcon } from "lucide-react";
@@ -15,7 +14,14 @@ import {
 import { Button } from "@/components/ui/button";
 
 interface CollectionTableRowProps {
-  entry: CollectionEntry;
+  entry: {
+    id: string;
+    slug: string;
+    title: string;
+    published_at: string | null;
+    updated_at: string;
+    created_at: string;
+  };
 }
 
 export function CollectionTableRow({ entry }: CollectionTableRowProps) {
@@ -23,15 +29,10 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const getStatusColor = (status: CollectionEntry["status"]) => {
-    switch (status) {
-      case "published":
-        return "bg-green-500/10 text-green-600 dark:text-green-400";
-      case "draft":
-        return "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400";
-      case "archived":
-        return "bg-gray-500/10 text-gray-600 dark:text-gray-400";
-    }
+  const getStatusColor = (published_at: string | null) => {
+    return published_at
+      ? "bg-green-500/10 text-green-600 dark:text-green-400"
+      : "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400";
   };
 
   const handleRowClick = () => {
@@ -66,7 +67,7 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
         <div className="flex flex-col gap-1 min-w-0 flex-1">
           <span className="font-medium truncate">{entry.title}</span>
           <span className="text-xs text-muted-foreground">
-            {formatDistanceToNow(entry.updatedAt, { addSuffix: true })}
+            {formatDistanceToNow(entry.updated_at, { addSuffix: true })}
           </span>
         </div>
 
@@ -76,11 +77,10 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
           <div
             className={cn(
               "size-2 rounded-full",
-              entry.status === "published" && "bg-green-500",
-              entry.status === "draft" && "bg-yellow-500",
-              entry.status === "archived" && "bg-gray-500",
+              !!entry.published_at && "bg-green-500",
+              !entry.published_at && "bg-yellow-500",
             )}
-            title={entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
+            title={entry.published_at ? "Published" : "Draft"}
           />
 
           {/* Actions - always visible on mobile */}
@@ -124,24 +124,24 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
           <span
             className={cn(
               "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-              getStatusColor(entry.status),
+              getStatusColor(entry.published_at),
             )}
           >
-            {entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
+            {entry.published_at ? "Published" : "Draft"}
           </span>
         </div>
 
         {/* Created */}
         <div className="hidden xl:block xl:w-[17.5%] pl-2">
           <span className="text-muted-foreground">
-            {formatDistanceToNow(entry.createdAt, { addSuffix: true })}
+            {formatDistanceToNow(entry.created_at, { addSuffix: true })}
           </span>
         </div>
 
         {/* Updated */}
         <div className="w-[35%] xl:w-[17.5%] pl-2 flex items-center justify-between">
           <span className="text-muted-foreground">
-            {formatDistanceToNow(entry.updatedAt, { addSuffix: true })}
+            {formatDistanceToNow(entry.updated_at, { addSuffix: true })}
           </span>
 
           {/* Actions Menu - visible on hover on desktop */}

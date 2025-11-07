@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { FolderOpenIcon } from "lucide-react";
-import Link from "next/link";
+import { NewCollectionModal } from "./new-collection-modal";
 
 export function CollectionsEmptyState() {
   return (
@@ -12,9 +11,7 @@ export function CollectionsEmptyState() {
       <p className="text-muted-foreground mb-6 max-w-md">
         Get started by creating your first collection to organize your content
       </p>
-      <Button asChild>
-        <Link href="/collections/new">Create Collection</Link>
-      </Button>
+      <NewCollectionModal />
     </div>
   );
 }

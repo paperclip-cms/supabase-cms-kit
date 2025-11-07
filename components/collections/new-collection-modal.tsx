@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import { z } from "zod";
 import {
   Dialog,
@@ -17,6 +16,7 @@ import type dynamicIconImports from "lucide-react/dynamicIconImports";
 
 type IconName = keyof typeof dynamicIconImports;
 import { PlusIcon } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const collectionSchema = z.object({
   title: z
@@ -48,7 +48,6 @@ export function slugify(text: string): string {
 }
 
 export function NewCollectionModal() {
-  const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [icon, setIcon] = React.useState<IconName>("zap");
@@ -56,6 +55,7 @@ export function NewCollectionModal() {
   const [touched, setTouched] = React.useState<
     Partial<Record<keyof CollectionFormData, boolean>>
   >({});
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   // Auto-generate slug from title
   const slug = React.useMemo(() => slugify(title), [title]);
@@ -74,21 +74,45 @@ export function NewCollectionModal() {
     }
   }, [title, slug, icon]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched({ title: true, slug: true, icon: true });
+
     const result = collectionSchema.safeParse({ title, slug, icon });
     if (!result.success) {
       return;
     }
 
+    setLoading(true);
+
+    const supabase = createClient();
+
+    const { error } = await supabase
+      .from("collections")
+      .insert({
+        label: title,
+        slug,
+        icon,
+        config: { test: "config" },
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.log(error);
+      setError("Failed to save collection. Please try again.");
+      setLoading(false);
+      return;
+    }
+
     // TODO: Handle actual insert to database
     // For now, we'll generate a mock ID and redirect
-    const mockId = Date.now().toString();
+    // const mockId = Date.now().toString();
 
     // Close modal and redirect to collection edit page
     setOpen(false);
-    router.push(`/collections/${mockId}`);
+    setLoading(false);
+    // router.push(`/collections/${mockId}`);
 
     // Reset form
     setTitle("");
@@ -163,8 +187,8 @@ export function NewCollectionModal() {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={!isValid}>
-              Create collection
+            <Button type="submit" disabled={!isValid || loading}>
+              {loading ? "Loading..." : "Create collection"}
             </Button>
           </DialogFooter>
         </form>
