@@ -3,19 +3,10 @@
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
+import type { CollectionsWithItemMetadata } from "@/lib/supabase/queries";
 
 interface CollectionCardProps {
-  collection: {
-    id: string;
-    slug: string;
-    label: string;
-    icon: string;
-    updated_at: string;
-    items: {
-      id: string;
-      published_at?: string;
-    }[];
-  };
+  collection: CollectionsWithItemMetadata[number];
 }
 
 export function CollectionCard({ collection }: CollectionCardProps) {

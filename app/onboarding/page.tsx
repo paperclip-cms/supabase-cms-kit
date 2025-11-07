@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Circle, AlertTriangle, X } from "lucide-react";
 import { useOnboarding } from "@/lib/contexts/onboarding-context";
@@ -44,7 +45,7 @@ const steps: Step[] = [
   },
 ];
 
-export default function OnboardingPage() {
+function OnboardingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { status, isLoading, refetch } = useOnboarding();
@@ -252,5 +253,22 @@ export default function OnboardingPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-full flex items-center justify-center bg-muted/30">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-purple/20 border-t-purple rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <OnboardingContent />
+    </Suspense>
   );
 }

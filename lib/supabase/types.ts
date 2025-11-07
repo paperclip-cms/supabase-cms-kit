@@ -18,7 +18,7 @@ export type Database = {
         Row: {
           config: Json;
           created_at: string;
-          icon: string | null;
+          icon: string;
           id: string;
           label: string;
           slug: string;
@@ -27,7 +27,7 @@ export type Database = {
         Insert: {
           config: Json;
           created_at?: string;
-          icon?: string | null;
+          icon: string;
           id?: string;
           label: string;
           slug: string;
@@ -36,7 +36,7 @@ export type Database = {
         Update: {
           config?: Json;
           created_at?: string;
-          icon?: string | null;
+          icon?: string;
           id?: string;
           label?: string;
           slug?: string;

@@ -1,16 +1,10 @@
 "use client";
 
+import { Tables } from "@/lib/supabase/types";
 import { CollectionTableRow } from "./collection-table-row";
 
 interface CollectionTableProps {
-  entries: {
-    id: string;
-    slug: string;
-    title: string;
-    published_at: string | null;
-    updated_at: string;
-    created_at: string;
-  }[];
+  entries: Tables<"items">[];
 }
 
 export function CollectionTable({ entries }: CollectionTableProps) {
