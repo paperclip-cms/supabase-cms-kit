@@ -14,8 +14,6 @@ export function CollectionCard({ collection }: CollectionCardProps) {
     addSuffix: true,
   });
 
-  const icon = collection.icon ?? "folder";
-
   const publishedCount = collection.items.filter(
     (item) => item.published_at,
   ).length;
@@ -29,7 +27,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
         <div className="mb-3">
           <div className="size-10 rounded-md bg-muted/50 flex items-center justify-center">
             <DynamicIcon
-              name={icon as IconName}
+              name={collection.icon as IconName}
               className="size-5 text-muted-foreground"
             />
           </div>

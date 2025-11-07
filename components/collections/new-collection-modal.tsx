@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -17,24 +16,8 @@ import type dynamicIconImports from "lucide-react/dynamicIconImports";
 type IconName = keyof typeof dynamicIconImports;
 import { PlusIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { CollectionFormData, collectionSchema } from "@/lib/schemas";
 
-const collectionSchema = z.object({
-  title: z
-    .string()
-    .min(1, "Title is required")
-    .max(100, "Title must be 100 characters or less"),
-  slug: z
-    .string()
-    .min(1, "Slug is required")
-    .max(100, "Slug must be 100 characters or less")
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Slug must contain only lowercase letters, numbers, and hyphens (no spaces or special characters)",
-    ),
-  icon: z.string().min(1, "Icon is required"),
-});
-
-type CollectionFormData = z.infer<typeof collectionSchema>;
 // type ValidationErrors = Partial<Record<keyof CollectionFormData, string>>;
 
 export function slugify(text: string): string {

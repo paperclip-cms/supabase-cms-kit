@@ -12,16 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Tables } from "@/lib/supabase/types";
 
 interface CollectionTableRowProps {
-  entry: {
-    id: string;
-    slug: string;
-    title: string;
-    published_at: string | null;
-    updated_at: string;
-    created_at: string;
-  };
+  entry: Tables<"items">;
 }
 
 export function CollectionTableRow({ entry }: CollectionTableRowProps) {
