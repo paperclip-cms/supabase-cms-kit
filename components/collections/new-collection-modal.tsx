@@ -15,6 +15,7 @@ import type dynamicIconImports from "lucide-react/dynamicIconImports";
 
 type IconName = keyof typeof dynamicIconImports;
 import { PlusIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { CollectionFormData, collectionSchema } from "@/lib/schemas";
 
@@ -31,6 +32,7 @@ export function slugify(text: string): string {
 }
 
 export function NewCollectionModal() {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [icon, setIcon] = React.useState<IconName>("zap");
@@ -58,19 +60,20 @@ export function NewCollectionModal() {
   }, [title, slug, icon]);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true);
+
     e.preventDefault();
     setTouched({ title: true, slug: true, icon: true });
 
     const result = collectionSchema.safeParse({ title, slug, icon });
     if (!result.success) {
+      setError(result.error.issues[0].message);
       return;
     }
 
-    setLoading(true);
-
     const supabase = createClient();
 
-    const { error } = await supabase
+    const { data: newCollection, error } = await supabase
       .from("collections")
       .insert({
         label: title,
@@ -82,25 +85,13 @@ export function NewCollectionModal() {
       .single();
 
     if (error) {
-      console.log(error);
-      setError("Failed to save collection. Please try again.");
+      console.error(error);
+      setError("Failed to create collection. Please try again.");
       setLoading(false);
       return;
     }
 
-    // TODO: Handle actual insert to database
-    // For now, we'll generate a mock ID and redirect
-    // const mockId = Date.now().toString();
-
-    // Close modal and redirect to collection edit page
-    setOpen(false);
-    setLoading(false);
-    // router.push(`/collections/${mockId}`);
-
-    // Reset form
-    setTitle("");
-    setIcon("zap");
-    setTouched({});
+    router.push(`/collections/${newCollection.slug}`);
   };
 
   const isValid = !error && title && slug && icon;

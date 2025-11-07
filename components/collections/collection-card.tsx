@@ -7,9 +7,10 @@ import type { CollectionsWithItemMetadata } from "@/lib/supabase/queries";
 
 interface CollectionCardProps {
   collection: CollectionsWithItemMetadata[number];
+  className?: string;
 }
 
-export function CollectionCard({ collection }: CollectionCardProps) {
+export function CollectionCard({ collection, className }: CollectionCardProps) {
   const timeAgo = formatDistanceToNow(collection.updated_at, {
     addSuffix: true,
   });
@@ -22,7 +23,10 @@ export function CollectionCard({ collection }: CollectionCardProps) {
   ).length;
 
   return (
-    <Link href={`/collections/${collection.slug}`} className="block">
+    <Link
+      href={`/collections/${collection.slug}`}
+      className={`block ${className || ""}`}
+    >
       <div className="w-full h-full min-h-[200px] p-4 bg-background rounded-md border border-gray-300 dark:border-border/50 hover:border-gray-500 dark:hover:border-border cursor-pointer transition-colors duration-200 group flex flex-col">
         <div className="mb-3">
           <div className="size-10 rounded-md bg-muted/50 flex items-center justify-center">
@@ -39,7 +43,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
 
         <div className="space-y-1 text-sm text-muted-foreground mb-3 flex-1">
           <div>
-            {publishedCount} {publishedCount === 1 ? "entry" : "entries"}
+            {publishedCount} {publishedCount === 1 ? "item" : "items"}
           </div>
           {draftCount > 0 && (
             <div>

@@ -4,10 +4,10 @@ import { Tables } from "@/lib/supabase/types";
 import { CollectionTableRow } from "./collection-table-row";
 
 interface CollectionTableProps {
-  entries: Tables<"items">[];
+  items: Tables<"items">[];
 }
 
-export function CollectionTable({ entries }: CollectionTableProps) {
+export function CollectionTable({ items }: CollectionTableProps) {
   return (
     <div className="w-full border border-border rounded-lg overflow-hidden">
       <div className="bg-secondary/50 dark:bg-muted/50 px-6 py-1.5 text-xs uppercase tracking-wide flex items-center text-muted-foreground/70 border-b sticky top-0 z-10">
@@ -21,8 +21,8 @@ export function CollectionTable({ entries }: CollectionTableProps) {
       </div>
 
       <div className="w-full">
-        {entries.map((entry) => (
-          <CollectionTableRow key={entry.id} entry={entry} />
+        {items.map((item) => (
+          <CollectionTableRow key={item.id} item={item} />
         ))}
       </div>
     </div>

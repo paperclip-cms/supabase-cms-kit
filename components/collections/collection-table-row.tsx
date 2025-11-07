@@ -15,10 +15,10 @@ import { Button } from "@/components/ui/button";
 import { Tables } from "@/lib/supabase/types";
 
 interface CollectionTableRowProps {
-  entry: Tables<"items">;
+  item: Tables<"items">;
 }
 
-export function CollectionTableRow({ entry }: CollectionTableRowProps) {
+export function CollectionTableRow({ item }: CollectionTableRowProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = React.useState(false);
@@ -30,21 +30,21 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
   };
 
   const handleRowClick = () => {
-    router.push(`${pathname}/${entry.id}`);
+    router.push(`${pathname}/${item.id}`);
   };
 
   const handleEdit = () => {
-    router.push(`${pathname}/${entry.id}`);
+    router.push(`${pathname}/${item.id}`);
   };
 
   const handleDuplicate = () => {
     // TODO: Implement duplicate logic
-    console.log("Duplicate:", entry.id);
+    console.log("Duplicate:", item.id);
   };
 
   const handleDelete = () => {
     // TODO: Implement delete logic
-    console.log("Delete:", entry.id);
+    console.log("Delete:", item.id);
   };
 
   return (
@@ -59,9 +59,9 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
       <div className="md:hidden w-full flex items-center justify-between gap-3">
         {/* Left: Title + Date */}
         <div className="flex flex-col gap-1 min-w-0 flex-1">
-          <span className="font-medium truncate">{entry.title}</span>
+          <span className="font-medium truncate">{item.title}</span>
           <span className="text-xs text-muted-foreground">
-            {formatDistanceToNow(entry.updated_at, { addSuffix: true })}
+            {formatDistanceToNow(item.updated_at, { addSuffix: true })}
           </span>
         </div>
 
@@ -71,10 +71,10 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
           <div
             className={cn(
               "size-2 rounded-full",
-              !!entry.published_at && "bg-green-500",
-              !entry.published_at && "bg-yellow-500",
+              !!item.published_at && "bg-green-500",
+              !item.published_at && "bg-yellow-500",
             )}
-            title={entry.published_at ? "Published" : "Draft"}
+            title={item.published_at ? "Published" : "Draft"}
           />
 
           {/* Actions - always visible on mobile */}
@@ -109,7 +109,7 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
         {/* Title */}
         <div className="w-[45%] xl:w-[50%] flex items-center gap-2">
           <div className="flex flex-col items-start overflow-hidden">
-            <span className="font-medium truncate w-full">{entry.title}</span>
+            <span className="font-medium truncate w-full">{item.title}</span>
           </div>
         </div>
 
@@ -118,24 +118,24 @@ export function CollectionTableRow({ entry }: CollectionTableRowProps) {
           <span
             className={cn(
               "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-              getStatusColor(entry.published_at),
+              getStatusColor(item.published_at),
             )}
           >
-            {entry.published_at ? "Published" : "Draft"}
+            {item.published_at ? "Published" : "Draft"}
           </span>
         </div>
 
         {/* Created */}
         <div className="hidden xl:block xl:w-[17.5%] pl-2">
           <span className="text-muted-foreground">
-            {formatDistanceToNow(entry.created_at, { addSuffix: true })}
+            {formatDistanceToNow(item.created_at, { addSuffix: true })}
           </span>
         </div>
 
         {/* Updated */}
         <div className="w-[35%] xl:w-[17.5%] pl-2 flex items-center justify-between">
           <span className="text-muted-foreground">
-            {formatDistanceToNow(entry.updated_at, { addSuffix: true })}
+            {formatDistanceToNow(item.updated_at, { addSuffix: true })}
           </span>
 
           {/* Actions Menu - visible on hover on desktop */}

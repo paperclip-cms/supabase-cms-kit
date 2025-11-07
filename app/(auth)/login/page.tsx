@@ -20,6 +20,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  // const [loading, setLoading] = React.useState<boolean>(false);
   const [validationError, setValidationError] = React.useState<string | null>(
     null,
   );
