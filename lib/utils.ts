@@ -21,3 +21,13 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, "") // Remove leading/trailing hyphens
     .trim();
 }
+
+export function slugifyFieldName(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s_]/g, "") // Remove special characters except spaces and underscores
+    .replace(/\s+/g, "_") // Replace spaces with underscores
+    .replace(/_+/g, "_") // Replace multiple underscores with single underscore
+    .replace(/^_+|_+$/g, "") // Remove leading/trailing underscores
+    .trim();
+}

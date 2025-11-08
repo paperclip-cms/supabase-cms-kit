@@ -1,13 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { FieldConfig, FieldType, FieldOption } from "@/lib/types";
+import { FieldConfig, FieldType } from "@/lib/types";
 import {
   getOptionsForFieldType,
   getOptionUIConfig,
-  OptionValueType,
   FieldOptionValue,
 } from "@/lib/field-options";
+import { fieldConfigSchema } from "@/lib/field-validation";
+import {
+  fieldConfigToOptionsMap,
+  optionsMapToFieldOptions,
+} from "@/lib/field-config-utils";
+import { OPTION_INPUT_COMPONENTS } from "@/components/ui/field-option-inputs";
 import {
   Dialog,
   DialogContent,
@@ -28,8 +33,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { PlusIcon, XIcon } from "lucide-react";
-import { slugify } from "@/lib/utils";
+import { slugifyFieldName } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface FieldEditorDialogProps {
   open: boolean;
@@ -52,16 +57,13 @@ export function FieldEditorDialog({
   const [required, setRequired] = React.useState(false);
   const [description, setDescription] = React.useState("");
 
-  // Auto-generate slug from label
-  const slug = React.useMemo(() => slugify(label), [label]);
+  // Auto-generate slug from label (snake_case for object properties)
+  const slug = React.useMemo(() => slugifyFieldName(label), [label]);
 
   // Options data (stored as key-value map internally, converted to array on save)
   const [optionsData, setOptionsData] = React.useState<
     Record<string, FieldOptionValue>
   >({});
-
-  // Temporary state for adding items to arrays
-  const [newAcceptType, setNewAcceptType] = React.useState("");
 
   // Initialize form from field prop
   React.useEffect(() => {
@@ -70,20 +72,8 @@ export function FieldEditorDialog({
       setType(field.type);
       setRequired(field.required);
       setDescription(field.description ?? "");
-
-      // Convert options array to key-value map
-      const optionsMap: Record<string, FieldOptionValue> = {};
-      if (field.options) {
-        for (const option of field.options) {
-          // Convert bytes to MB for maxSize
-          if (option.type === "maxSize" && typeof option.value === "number") {
-            optionsMap[option.type] = option.value / (1024 * 1024);
-          } else {
-            optionsMap[option.type] = option.value;
-          }
-        }
-      }
-      setOptionsData(optionsMap);
+      // Use utility function to convert field config to options map
+      setOptionsData(fieldConfigToOptionsMap(field));
     } else {
       // Reset to defaults for new field
       setLabel("");
@@ -92,7 +82,6 @@ export function FieldEditorDialog({
       setDescription("");
       setOptionsData({});
     }
-    setNewAcceptType("");
   }, [field, open]);
 
   const handleTypeChange = (newType: FieldType) => {
@@ -103,32 +92,12 @@ export function FieldEditorDialog({
 
   const handleSave = () => {
     if (!slug || !label) {
+      toast.error("Field label is required");
       return;
     }
 
-    // Convert options map to array
-    const optionsArray: FieldOption[] = [];
-    for (const [key, value] of Object.entries(optionsData)) {
-      if (value !== undefined && value !== null) {
-        // Filter out empty arrays and empty choice arrays
-        if (Array.isArray(value) && value.length === 0) continue;
-        if (key === "choices" && Array.isArray(value)) {
-          // Filter out empty choices (we control the structure in the UI)
-          const choices = value as Array<{ label: string; value: string }>;
-          const validChoices = choices.filter((c) => c.label && c.value);
-          if (validChoices.length === 0) continue;
-          optionsArray.push({ type: key, value: validChoices });
-        } else if (key === "maxSize" && typeof value === "number") {
-          // Convert MB to bytes for storage
-          optionsArray.push({
-            type: key,
-            value: value * 1024 * 1024,
-          } as FieldOption);
-        } else {
-          optionsArray.push({ type: key, value } as FieldOption);
-        }
-      }
-    }
+    // Use utility function to convert options map to field options array
+    const optionsArray = optionsMapToFieldOptions(optionsData);
 
     const fieldConfig: FieldConfig = {
       slug,
@@ -139,7 +108,16 @@ export function FieldEditorDialog({
       options: optionsArray.length > 0 ? optionsArray : undefined,
     };
 
-    onSave(fieldConfig);
+    // Validate field config before saving
+    const validationResult = fieldConfigSchema.safeParse(fieldConfig);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.issues[0].message;
+      toast.error(errorMessage);
+      return;
+    }
+
+    // Cast validated data back to FieldConfig for consistency
+    onSave(validationResult.data as FieldConfig);
     onOpenChange(false);
   };
 
@@ -237,249 +215,31 @@ export function FieldEditorDialog({
             />
           </div>
 
-          {/* Render all options dynamically based on field type */}
+          {/* Render all options dynamically using component registry */}
           {availableOptions.map((optionKey) => {
             const uiConfig = getOptionUIConfig(optionKey);
+            const InputComponent = OPTION_INPUT_COMPONENTS[uiConfig.valueType];
 
-            if (uiConfig.valueType === OptionValueType.String) {
-              const stringValue = optionsData[optionKey] as string | undefined;
-              return (
-                <div key={optionKey} className="space-y-2">
-                  <Label htmlFor={`option-${optionKey}`}>
-                    {uiConfig.label}
-                  </Label>
-                  <Input
-                    id={`option-${optionKey}`}
-                    type={
-                      type === FieldType.Number && optionKey === "defaultValue"
-                        ? "number"
-                        : "text"
-                    }
-                    placeholder={uiConfig.placeholder}
-                    value={stringValue ?? ""}
-                    onChange={(e) =>
-                      setOptionValue(optionKey, e.target.value || undefined)
-                    }
-                  />
-                  {uiConfig.helpText && (
-                    <p className="text-xs text-muted-foreground">
-                      {uiConfig.helpText}
-                    </p>
-                  )}
-                </div>
+            if (!InputComponent) {
+              console.warn(
+                `No input component for value type: ${uiConfig.valueType}`,
               );
+              return null;
             }
 
-            if (uiConfig.valueType === OptionValueType.Number) {
-              const numberValue = optionsData[optionKey] as number | undefined;
-              return (
-                <div key={optionKey} className="space-y-2">
-                  <Label htmlFor={`option-${optionKey}`}>
-                    {uiConfig.label}
-                  </Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
-                      id={`option-${optionKey}`}
-                      type="number"
-                      placeholder={uiConfig.placeholder}
-                      value={numberValue ?? ""}
-                      onChange={(e) =>
-                        setOptionValue(
-                          optionKey,
-                          e.target.value ? Number(e.target.value) : undefined,
-                        )
-                      }
-                    />
-                    {uiConfig.suffix && (
-                      <span className="text-sm text-muted-foreground whitespace-nowrap">
-                        {uiConfig.suffix}
-                      </span>
-                    )}
-                  </div>
-                  {uiConfig.helpText && (
-                    <p className="text-xs text-muted-foreground">
-                      {uiConfig.helpText}
-                    </p>
-                  )}
-                </div>
-              );
-            }
-
-            if (uiConfig.valueType === OptionValueType.StringArray) {
-              const currentArray = (optionsData[optionKey] as string[]) ?? [];
-              return (
-                <div key={optionKey} className="space-y-2">
-                  <Label>{uiConfig.label}</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder={uiConfig.placeholder}
-                      value={newAcceptType}
-                      onChange={(e) => setNewAcceptType(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && newAcceptType.trim()) {
-                          e.preventDefault();
-                          setOptionValue(optionKey, [
-                            ...currentArray,
-                            newAcceptType.trim(),
-                          ]);
-                          setNewAcceptType("");
-                        }
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        if (newAcceptType.trim()) {
-                          setOptionValue(optionKey, [
-                            ...currentArray,
-                            newAcceptType.trim(),
-                          ]);
-                          setNewAcceptType("");
-                        }
-                      }}
-                    >
-                      <PlusIcon />
-                      Add
-                    </Button>
-                  </div>
-                  {currentArray.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {currentArray.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center gap-1 px-2 py-1 bg-secondary rounded-md text-sm"
-                        >
-                          <span>{item}</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-4 w-4 p-0"
-                            onClick={() =>
-                              setOptionValue(
-                                optionKey,
-                                currentArray.filter((_, i) => i !== index),
-                              )
-                            }
-                          >
-                            <XIcon className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {uiConfig.helpText && (
-                    <p className="text-xs text-muted-foreground">
-                      {uiConfig.helpText}
-                    </p>
-                  )}
-                </div>
-              );
-            }
-
-            if (uiConfig.valueType === OptionValueType.ChoiceArray) {
-              const currentChoices = (optionsData[optionKey] as Array<{
-                label: string;
-                value: string;
-              }>) ?? [{ label: "", value: "" }];
-              return (
-                <div key={optionKey} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label>{uiConfig.label}</Label>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        setOptionValue(optionKey, [
-                          ...currentChoices,
-                          { label: "", value: "" },
-                        ])
-                      }
-                    >
-                      <PlusIcon />
-                      Add Choice
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    {currentChoices.map((choice, index) => (
-                      <div key={index} className="flex gap-2">
-                        <Input
-                          placeholder="Label"
-                          value={choice.label}
-                          onChange={(e) => {
-                            const updated = [...currentChoices];
-                            updated[index].label = e.target.value;
-                            setOptionValue(optionKey, updated);
-                          }}
-                        />
-                        <Input
-                          placeholder="Value"
-                          value={choice.value}
-                          onChange={(e) => {
-                            const updated = [...currentChoices];
-                            updated[index].value = e.target.value;
-                            setOptionValue(optionKey, updated);
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() =>
-                            setOptionValue(
-                              optionKey,
-                              currentChoices.filter((_, i) => i !== index),
-                            )
-                          }
-                          disabled={currentChoices.length === 1}
-                        >
-                          <XIcon />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-
-            if (
-              uiConfig.valueType === OptionValueType.Select &&
-              uiConfig.choices
-            ) {
-              const selectValue = optionsData[optionKey] as string | undefined;
-              return (
-                <div key={optionKey} className="space-y-2">
-                  <Label htmlFor={`option-${optionKey}`}>
-                    {uiConfig.label}
-                  </Label>
-                  <Select
-                    value={selectValue ?? uiConfig.choices[0].value}
-                    onValueChange={(value) => setOptionValue(optionKey, value)}
-                  >
-                    <SelectTrigger id={`option-${optionKey}`}>
-                      <SelectValue placeholder="Select option" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {uiConfig.choices.map((choice) => (
-                        <SelectItem key={choice.value} value={choice.value}>
-                          {choice.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {uiConfig.helpText && (
-                    <p className="text-xs text-muted-foreground">
-                      {uiConfig.helpText}
-                    </p>
-                  )}
-                </div>
-              );
-            }
-
-            return null;
+            return (
+              <InputComponent
+                key={optionKey}
+                value={optionsData[optionKey]}
+                onChange={(value) =>
+                  setOptionValue(
+                    optionKey,
+                    value as FieldOptionValue | undefined,
+                  )
+                }
+                config={uiConfig}
+              />
+            );
           })}
         </div>
 

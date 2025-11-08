@@ -38,10 +38,10 @@ const _valueTypeCheck = null! as FieldValueType satisfies Record<
 >;
 
 // Simple, flexible option storage - just type and value pairs
+// Uses `unknown` instead of `any` for type safety - must be narrowed before use
 export type FieldOption = {
   type: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: any;
+  value: unknown;
 };
 
 export type FieldConfig = {

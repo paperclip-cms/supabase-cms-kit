@@ -8,16 +8,11 @@ import {
 } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Checkbox } from "@/components/ui/checkbox";
 import { FieldEditorDialog } from "./field-editor-dialog";
-import { PlusIcon, PencilIcon, TrashIcon } from "lucide-react";
+import { FieldRow } from "./field-row";
+import { PlusIcon } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 type BuiltInFieldCategory = "core" | "optional";
 
@@ -163,100 +158,6 @@ export function CollectionDefinitionEditor({
     setTimeout(() => setCopiedSlug(null), 2000);
   };
 
-  const renderBuiltInField = (field: BuiltInField) => {
-    const settings = getBuiltInFieldSettings(field.slug);
-    const isCore = field.category === "core";
-    const copied = copiedSlug === field.slug;
-
-    return (
-      <div
-        key={field.slug}
-        className="flex items-center gap-4 px-4 py-2.5 hover:bg-accent/50 transition-colors group"
-      >
-        {/* Visibility checkbox */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <Checkbox
-                checked={isCore || settings.visible}
-                disabled={isCore}
-                onCheckedChange={(checked) =>
-                  handleBuiltInFieldChange(field.slug, {
-                    visible: checked as boolean,
-                    required: checked ? settings.required : false,
-                  })
-                }
-              />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            <p>
-              {isCore
-                ? "Always visible"
-                : settings.visible
-                  ? "Hide from forms"
-                  : "Show in forms"}
-            </p>
-          </TooltipContent>
-        </Tooltip>
-
-        {/* Field info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">{field.label}</span>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <code
-                  className="text-xs px-1.5 py-0.5 bg-muted/50 rounded font-mono text-muted-foreground hover:bg-muted cursor-pointer transition-colors"
-                  onClick={() => handleCopySlug(field.slug)}
-                >
-                  {field.slug}
-                </code>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>{copied ? "Copied!" : "Click to copy"}</p>
-              </TooltipContent>
-            </Tooltip>
-            <span className="text-xs text-muted-foreground">
-              • {field.type}
-            </span>
-          </div>
-        </div>
-
-        {/* Required checkbox */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <Checkbox
-                checked={isCore || settings.required}
-                disabled={isCore || !settings.visible}
-                onCheckedChange={(checked) =>
-                  handleBuiltInFieldChange(field.slug, {
-                    required: checked as boolean,
-                  })
-                }
-              />
-              <span className="text-xs text-muted-foreground min-w-[60px]">
-                Required
-              </span>
-            </label>
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            <p>
-              {isCore
-                ? "Always required"
-                : !settings.visible
-                  ? "Field must be visible to be required"
-                  : settings.required
-                    ? "Make optional"
-                    : "Make required"}
-            </p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
-    );
-  };
-
   return (
     <TooltipProvider delayDuration={0}>
       <div className="space-y-8">
@@ -286,12 +187,25 @@ export function CollectionDefinitionEditor({
 
             {/* Fields */}
             <div className="divide-y">
-              {BUILT_IN_FIELDS.filter((f) => f.category === "core").map(
-                renderBuiltInField,
-              )}
-              {BUILT_IN_FIELDS.filter((f) => f.category === "optional").map(
-                renderBuiltInField,
-              )}
+              {BUILT_IN_FIELDS.sort((a, b) =>
+                a.category === "core" ? -1 : b.category === "core" ? 1 : 0,
+              ).map((field) => (
+                <FieldRow
+                  key={field.slug}
+                  field={field}
+                  settings={getBuiltInFieldSettings(field.slug)}
+                  isBuiltIn={true}
+                  isCore={field.category === "core"}
+                  copiedSlug={copiedSlug}
+                  onCopySlug={handleCopySlug}
+                  onVisibilityChange={(visible, required) =>
+                    handleBuiltInFieldChange(field.slug, { visible, required })
+                  }
+                  onRequiredChange={(required) =>
+                    handleBuiltInFieldChange(field.slug, { required })
+                  }
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -323,64 +237,18 @@ export function CollectionDefinitionEditor({
           ) : (
             <div className="border rounded-lg">
               <div className="divide-y">
-                {customFields.map((field) => {
-                  const copied = copiedSlug === field.slug;
-
-                  return (
-                    <div
-                      key={field.slug}
-                      className="flex items-center gap-4 px-4 py-2.5 hover:bg-accent/50 transition-colors group"
-                    >
-                      {/* Field info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium">
-                            {field.label}
-                          </span>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <code
-                                className="text-xs px-1.5 py-0.5 bg-muted/50 rounded font-mono text-muted-foreground hover:bg-muted cursor-pointer transition-colors"
-                                onClick={() => handleCopySlug(field.slug)}
-                              >
-                                {field.slug}
-                              </code>
-                            </TooltipTrigger>
-                            <TooltipContent side="top">
-                              <p>{copied ? "Copied!" : "Click to copy"}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                          <span className="text-xs text-muted-foreground">
-                            • {field.type.toLowerCase()}
-                          </span>
-                          {field.required && (
-                            <span className="text-xs text-muted-foreground">
-                              • Required
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEditField(field)}
-                        >
-                          <PencilIcon />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteField(field.slug)}
-                        >
-                          <TrashIcon />
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
+                {customFields.map((field) => (
+                  <FieldRow
+                    key={field.slug}
+                    field={field}
+                    isBuiltIn={false}
+                    required={field.required}
+                    copiedSlug={copiedSlug}
+                    onCopySlug={handleCopySlug}
+                    onEdit={handleEditField}
+                    onDelete={handleDeleteField}
+                  />
+                ))}
               </div>
             </div>
           )}
