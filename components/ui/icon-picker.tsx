@@ -9,8 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import { slugify } from "../collections/new-collection-modal";
+import { cn, slugify } from "@/lib/utils";
 
 type IconName = keyof typeof dynamicIconImports;
 
@@ -40,9 +39,14 @@ const allIconNames = Object.keys(dynamicIconImports) as IconName[];
 interface IconPickerProps {
   value: IconName;
   onChange: (icon: IconName) => void;
+  variant?: "default" | "large";
 }
 
-export function IconPicker({ value, onChange }: IconPickerProps) {
+export function IconPicker({
+  value,
+  onChange,
+  variant = "default",
+}: IconPickerProps) {
   const [search, setSearch] = React.useState("");
   const [open, setOpen] = React.useState(false);
 
@@ -69,9 +73,18 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="justify-center size-9 p-0">
-          <DynamicIcon name={value} className="size-4" />
-        </Button>
+        {variant === "large" ? (
+          <button className="flex items-center justify-center size-10 rounded-lg hover:bg-accent/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
+            <DynamicIcon
+              name={value}
+              className="size-6 text-muted-foreground"
+            />
+          </button>
+        ) : (
+          <Button variant="outline" className="justify-center size-9 p-0">
+            <DynamicIcon name={value} className="size-4" />
+          </Button>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-80">
         <div className="p-2 border-b">

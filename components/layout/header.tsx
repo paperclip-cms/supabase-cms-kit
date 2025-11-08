@@ -6,17 +6,9 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { useOnboarding } from "@/lib/contexts/onboarding-context";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "./theme-toggle";
 import { SettingsMenu } from "./settings-menu";
-import { ChevronDownIcon, MenuIcon } from "lucide-react";
-import { collections } from "@/lib/mock-data";
+import { MenuIcon } from "lucide-react";
 import { LogoWithBadge } from "@/components/branding/logo-with-badge";
 
 export default function Header() {
@@ -28,34 +20,14 @@ export default function Header() {
 
   const navContent = (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "gap-1",
-              pathname.startsWith("/collections") && "bg-accent",
-            )}
-          >
-            Collections
-            <ChevronDownIcon className="h-3 w-3" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          {collections.map((collection) => (
-            <DropdownMenuItem key={collection.id} asChild>
-              <Link href={`/collections/${collection.id}`}>
-                {collection.name}
-              </Link>
-            </DropdownMenuItem>
-          ))}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href="/collections">All Collections</Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Button
+        variant="ghost"
+        size="sm"
+        className={cn(pathname === "/collections" && "bg-accent")}
+        asChild
+      >
+        <Link href="/collections">Collections</Link>
+      </Button>
 
       <Button
         variant="ghost"

@@ -21,8 +21,6 @@ export default async function NewItemPage({
     return <div>Error loading collection</div>;
   }
 
-  const collectionName = collection.label;
-
   return (
     <div className="p-8">
       <div className="flex flex-col mb-8 gap-2">
@@ -38,7 +36,7 @@ export default async function NewItemPage({
             href={`/collections/${collectionSlug}`}
             className="hover:text-foreground transition-colors"
           >
-            {collectionName}
+            {collection.label}
           </Link>
           <span>/</span>
           <span className="text-foreground">New Item</span>
@@ -69,7 +67,7 @@ export default async function NewItemPage({
               href={`/collections/${collectionSlug}`}
               className="hidden md:block text-3xl font-bold font-heading text-muted-foreground hover:text-foreground transition-colors shrink-0"
             >
-              {collectionName}
+              {collection.label}
             </Link>
             <span className="hidden md:block text-3xl font-bold font-heading text-muted-foreground shrink-0">
               /

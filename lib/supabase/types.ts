@@ -46,8 +46,9 @@ export type Database = {
       };
       items: {
         Row: {
-          author: string;
+          author: string | null;
           collection_id: string;
+          content: string | null;
           cover: string | null;
           created_at: string;
           date: string | null;
@@ -58,10 +59,12 @@ export type Database = {
           tags: string[];
           title: string;
           updated_at: string;
+          user_id: string;
         };
         Insert: {
-          author: string;
+          author?: string | null;
           collection_id: string;
+          content?: string | null;
           cover?: string | null;
           created_at?: string;
           date?: string | null;
@@ -72,10 +75,12 @@ export type Database = {
           tags?: string[];
           title: string;
           updated_at?: string;
+          user_id: string;
         };
         Update: {
-          author?: string;
+          author?: string | null;
           collection_id?: string;
+          content?: string | null;
           cover?: string | null;
           created_at?: string;
           date?: string | null;
@@ -86,6 +91,7 @@ export type Database = {
           tags?: string[];
           title?: string;
           updated_at?: string;
+          user_id?: string;
         };
         Relationships: [
           {
@@ -99,19 +105,25 @@ export type Database = {
       };
       paperclip_settings: {
         Row: {
+          created_at: string;
           id: string;
           setting_key: string | null;
           setting_value: string | null;
+          updated_at: string;
         };
         Insert: {
+          created_at?: string;
           id?: string;
           setting_key?: string | null;
           setting_value?: string | null;
+          updated_at?: string;
         };
         Update: {
+          created_at?: string;
           id?: string;
           setting_key?: string | null;
           setting_value?: string | null;
+          updated_at?: string;
         };
         Relationships: [];
       };

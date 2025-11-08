@@ -18,18 +18,9 @@ import { PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { CollectionFormData, collectionSchema } from "@/lib/schemas";
+import { slugify } from "@/lib/utils";
 
 // type ValidationErrors = Partial<Record<keyof CollectionFormData, string>>;
-
-export function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "") // Remove special characters except spaces and hyphens
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
-    .replace(/^-+|-+$/g, "") // Remove leading/trailing hyphens
-    .trim();
-}
 
 export function NewCollectionModal() {
   const router = useRouter();
@@ -79,7 +70,10 @@ export function NewCollectionModal() {
         label: title,
         slug,
         icon,
-        config: { test: "config" },
+        config: {
+          customFields: [],
+          builtInFields: {},
+        },
       })
       .select()
       .single();
