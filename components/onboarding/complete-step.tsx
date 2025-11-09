@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import { useOnboarding } from "@/lib/contexts/onboarding-context";
+import { useEffect } from "react";
 
 type CompleteStepProps = {
   onComplete: () => void;
@@ -13,7 +13,7 @@ export function CompleteStep({ onComplete }: CompleteStepProps) {
   const { telemetryEnabled } = useOnboarding();
 
   // Persist telemetry preference to database when component loads
-  React.useEffect(() => {
+  useEffect(() => {
     const persistTelemetry = async () => {
       try {
         await fetch("/api/settings/telemetry", {

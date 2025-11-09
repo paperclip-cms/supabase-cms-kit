@@ -95,3 +95,58 @@ export function getOptionsForFieldType(
 export function getOptionUIConfig(optionKey: OptionKey): OptionUIConfig {
   return OPTION_UI_CONFIG[optionKey];
 }
+
+type BuiltInFieldCategory = "core" | "optional";
+
+export interface BuiltInField {
+  slug: string;
+  label: string;
+  type: string;
+  category: BuiltInFieldCategory;
+  description: string;
+}
+
+export const BUILT_IN_FIELDS: BuiltInField[] = [
+  {
+    slug: "title",
+    label: "Title",
+    type: "text",
+    category: "core",
+    description: "Primary title of the item (required, always visible)",
+  },
+  {
+    slug: "author",
+    label: "Author",
+    type: "text",
+    category: "optional",
+    description: "Author name or byline",
+  },
+  {
+    slug: "content",
+    label: "Content",
+    type: "richtext",
+    category: "optional",
+    description: "Main content body with rich text formatting",
+  },
+  {
+    slug: "date",
+    label: "Date",
+    type: "date",
+    category: "optional",
+    description: "Custom date field for your content",
+  },
+  {
+    slug: "tags",
+    label: "Tags",
+    type: "tags",
+    category: "optional",
+    description: "Free-form categorization tags",
+  },
+  {
+    slug: "cover",
+    label: "Cover Image",
+    type: "image",
+    category: "optional",
+    description: "Featured image or thumbnail",
+  },
+];

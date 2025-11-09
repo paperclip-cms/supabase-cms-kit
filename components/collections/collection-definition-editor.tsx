@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   FieldConfig,
   CollectionConfig,
@@ -13,86 +12,31 @@ import { FieldRow } from "./field-row";
 import { PlusIcon } from "lucide-react";
 import { toast } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-
-type BuiltInFieldCategory = "core" | "optional";
-
-interface BuiltInField {
-  slug: string;
-  label: string;
-  type: string; // Display string only - built-in fields don't use FieldType enum
-  category: BuiltInFieldCategory;
-  description: string;
-}
+import { BUILT_IN_FIELDS } from "@/lib/field-options";
+import { useEffect, useState } from "react";
 
 interface CollectionDefinitionEditorProps {
   config: CollectionConfig;
   onChange: (config: CollectionConfig) => void;
 }
 
-const BUILT_IN_FIELDS: BuiltInField[] = [
-  {
-    slug: "title",
-    label: "Title",
-    type: "text",
-    category: "core",
-    description: "Primary title of the item (required, always visible)",
-  },
-  {
-    slug: "author",
-    label: "Author",
-    type: "text",
-    category: "optional",
-    description: "Author name or byline",
-  },
-  {
-    slug: "content",
-    label: "Content",
-    type: "richtext",
-    category: "optional",
-    description: "Main content body with rich text formatting",
-  },
-  {
-    slug: "date",
-    label: "Date",
-    type: "date",
-    category: "optional",
-    description: "Custom date field for your content",
-  },
-  {
-    slug: "tags",
-    label: "Tags",
-    type: "tags",
-    category: "optional",
-    description: "Free-form categorization tags",
-  },
-  {
-    slug: "cover",
-    label: "Cover Image",
-    type: "image",
-    category: "optional",
-    description: "Featured image or thumbnail",
-  },
-];
-
 export function CollectionDefinitionEditor({
   config,
   onChange,
 }: CollectionDefinitionEditorProps) {
-  const [customFields, setCustomFields] = React.useState<FieldConfig[]>(
+  const [customFields, setCustomFields] = useState<FieldConfig[]>(
     config.customFields || [],
   );
-  const [dialogOpen, setDialogOpen] = React.useState(false);
-  const [editingField, setEditingField] = React.useState<
-    FieldConfig | undefined
-  >();
-  const [copiedSlug, setCopiedSlug] = React.useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingField, setEditingField] = useState<FieldConfig | undefined>();
+  const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
 
   // Initialize built-in field settings with defaults
   const getBuiltInFieldSettings = (slug: string): BuiltInFieldSettings => {
     return config.builtInFields?.[slug] || { visible: true, required: false };
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setCustomFields(config.customFields || []);
   }, [config]);
 
@@ -126,12 +70,10 @@ export function CollectionDefinitionEditor({
     let updated: FieldConfig[];
 
     if (editingField) {
-      // Editing existing field
       updated = customFields.map((f) =>
         f.slug === editingField.slug ? field : f,
       );
     } else {
-      // Adding new field
       updated = [...customFields, field];
     }
 
@@ -157,7 +99,6 @@ export function CollectionDefinitionEditor({
   return (
     <TooltipProvider delayDuration={0}>
       <div className="space-y-8">
-        {/* Built-in Fields Section */}
         <div className="space-y-4">
           <div className="flex items-start gap-2">
             <div className="flex-1">
@@ -170,7 +111,6 @@ export function CollectionDefinitionEditor({
           </div>
 
           <div className="border rounded-lg">
-            {/* Header */}
             <div className="flex items-center gap-4 px-4 py-2 bg-muted/50 border-b">
               <div className="w-4"></div>
               <div className="flex-1 text-xs font-medium text-muted-foreground">
@@ -181,7 +121,6 @@ export function CollectionDefinitionEditor({
               </div>
             </div>
 
-            {/* Fields */}
             <div className="divide-y">
               {BUILT_IN_FIELDS.sort((a, b) =>
                 a.category === "core" ? -1 : b.category === "core" ? 1 : 0,
@@ -208,7 +147,6 @@ export function CollectionDefinitionEditor({
 
         <Separator />
 
-        {/* Custom Fields Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>

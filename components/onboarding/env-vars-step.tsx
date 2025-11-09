@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
@@ -18,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useState } from "react";
 
 type EnvVarsStepProps = {
   onNext: () => void;
@@ -25,8 +25,8 @@ type EnvVarsStepProps = {
 };
 
 export function EnvVarsStep({ onNext, isComplete }: EnvVarsStepProps) {
-  const [isChecking, setIsChecking] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [isChecking, setIsChecking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleCheck = async () => {
     setIsChecking(true);

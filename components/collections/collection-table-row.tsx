@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { MoreVerticalIcon } from "lucide-react";
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Tables } from "@/lib/supabase/types";
+import { useState } from "react";
 
 interface CollectionTableRowProps {
   item: Tables<"items">;
@@ -21,7 +21,7 @@ interface CollectionTableRowProps {
 export function CollectionTableRow({ item }: CollectionTableRowProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const getStatusColor = (published_at: string | null) => {
     return published_at

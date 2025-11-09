@@ -1,12 +1,12 @@
 "use client";
 
-import * as React from "react";
 import { useRouter } from "next/navigation";
 import { LogoWithBadge } from "@/components/branding/logo-with-badge";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -15,15 +15,13 @@ const loginSchema = z.object({
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  // const [loading, setLoading] = React.useState<boolean>(false);
-  const [validationError, setValidationError] = React.useState<string | null>(
-    null,
-  );
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  // const [loading, setLoading] = useState<boolean>(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

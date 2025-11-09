@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, AlertCircle, Loader2, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 import { z } from "zod";
 
 type FirstUserStepProps = {
@@ -19,14 +19,12 @@ const userSchema = z.object({
 });
 
 export function FirstUserStep({ onNext, isComplete }: FirstUserStepProps) {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [validationError, setValidationError] = React.useState<string | null>(
-    null,
-  );
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

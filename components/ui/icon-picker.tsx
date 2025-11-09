@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn, slugify } from "@/lib/utils";
+import { useState, useMemo } from "react";
 
 type IconName = keyof typeof dynamicIconImports;
 
@@ -47,10 +47,10 @@ export function IconPicker({
   onChange,
   variant = "default",
 }: IconPickerProps) {
-  const [search, setSearch] = React.useState("");
-  const [open, setOpen] = React.useState(false);
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
 
-  const filteredIcons = React.useMemo(() => {
+  const filteredIcons = useMemo(() => {
     if (!search) {
       return popularIcons;
     }

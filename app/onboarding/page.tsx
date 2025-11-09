@@ -1,7 +1,6 @@
 "use client";
 
-import * as React from "react";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Circle, AlertTriangle, X } from "lucide-react";
 import { useOnboarding } from "@/lib/contexts/onboarding-context";
@@ -10,6 +9,7 @@ import { MigrationsStep } from "@/components/onboarding/migrations-step";
 import { FirstUserStep } from "@/components/onboarding/first-user-step";
 import { WelcomeStep } from "@/components/onboarding/welcome-step";
 import { CompleteStep } from "@/components/onboarding/complete-step";
+import React from "react";
 
 type Step = {
   id: string;
@@ -49,13 +49,12 @@ function OnboardingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { status, isLoading, refetch } = useOnboarding();
-  const [currentStep, setCurrentStep] = React.useState<string>("welcome");
-  const [showBanner, setShowBanner] = React.useState(false);
-  const [hasMissingEnvVarsError, setHasMissingEnvVarsError] =
-    React.useState(false);
+  const [currentStep, setCurrentStep] = useState<string>("welcome");
+  const [showBanner, setShowBanner] = useState(false);
+  const [hasMissingEnvVarsError, setHasMissingEnvVarsError] = useState(false);
 
   // Capture the error state and clear the query param
-  React.useEffect(() => {
+  useEffect(() => {
     const hasError = searchParams.get("error") === "missing-env-vars";
     if (hasError) {
       setHasMissingEnvVarsError(true);
@@ -66,7 +65,7 @@ function OnboardingContent() {
     }
   }, [searchParams, router]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (status) {
       if (status.complete) {
         setCurrentStep("complete");

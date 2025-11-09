@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,25 +18,26 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { CollectionFormData, collectionSchema } from "@/lib/schemas";
 import { slugify } from "@/lib/utils";
+import { useState, useMemo, useEffect } from "react";
 
 // type ValidationErrors = Partial<Record<keyof CollectionFormData, string>>;
 
 export function NewCollectionModal() {
   const router = useRouter();
-  const [open, setOpen] = React.useState(false);
-  const [title, setTitle] = React.useState("");
-  const [icon, setIcon] = React.useState<IconName>("zap");
-  const [error, setError] = React.useState<string | null>("");
-  const [touched, setTouched] = React.useState<
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [icon, setIcon] = useState<IconName>("zap");
+  const [error, setError] = useState<string | null>("");
+  const [touched, setTouched] = useState<
     Partial<Record<keyof CollectionFormData, boolean>>
   >({});
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Auto-generate slug from title
-  const slug = React.useMemo(() => slugify(title), [title]);
+  const slug = useMemo(() => slugify(title), [title]);
 
   // Validate form whenever values change
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       const result = collectionSchema.safeParse({ title, slug, icon });
       if (result.success) {

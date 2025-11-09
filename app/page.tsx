@@ -1,16 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import * as React from "react";
 import { useOnboarding } from "@/lib/contexts/onboarding-context";
 import { HomeButtons } from "@/components/home-buttons";
 import { LogoWithBadge } from "@/components/branding/logo-with-badge";
+import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
   const { status, isLoading } = useOnboarding();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isLoading && status && !status.complete) {
       router.push("/onboarding");
     }

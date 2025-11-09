@@ -1,11 +1,11 @@
 "use client";
 
-import * as React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, XIcon } from "lucide-react";
 import type { OptionInputProps } from "./index";
+import { useState } from "react";
 
 /**
  * Input component for choice array options (Select/MultiSelect choices)
@@ -15,8 +15,8 @@ export function ChoiceArrayOptionInput({
   onChange,
   config,
 }: OptionInputProps) {
-  const [newLabel, setNewLabel] = React.useState("");
-  const [newValue, setNewValue] = React.useState("");
+  const [newLabel, setNewLabel] = useState("");
+  const [newValue, setNewValue] = useState("");
 
   const choices = Array.isArray(value)
     ? (value as Array<{ label: string; value: string }>)

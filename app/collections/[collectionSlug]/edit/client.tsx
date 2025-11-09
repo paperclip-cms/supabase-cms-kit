@@ -60,7 +60,6 @@ export function CollectionEditClient({
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Save config
       const configResult = await updateCollectionConfig(
         collection.slug,
         config,
@@ -70,7 +69,6 @@ export function CollectionEditClient({
         return;
       }
 
-      // Save metadata if changed
       if (label !== collection.label || icon !== collection.icon) {
         const metadataResult = await updateCollectionMetadata(collection.slug, {
           label,
@@ -96,13 +94,10 @@ export function CollectionEditClient({
     <TooltipProvider delayDuration={0}>
       <div className="w-full flex justify-center p-8">
         <div className="w-full max-w-7xl">
-          {/* Header */}
           <div className="flex flex-col mb-8 gap-2">
             <div className="flex items-center justify-between gap-4">
-              {/* Title with inline edit */}
               <div className="flex flex-col gap-3 min-w-0 flex-1 group/header">
                 <div className="flex items-center gap-2">
-                  {/* Icon - larger and integrated */}
                   <IconPicker
                     value={icon as IconName}
                     onChange={(newIcon) => {
@@ -112,7 +107,6 @@ export function CollectionEditClient({
                     variant="large"
                   />
 
-                  {/* Name with hover edit */}
                   <div className="flex-1 min-w-0">
                     {isEditingName ? (
                       <Input
@@ -148,7 +142,6 @@ export function CollectionEditClient({
                   </div>
                 </div>
 
-                {/* Slug with copy */}
                 <div className="flex items-center gap-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -182,7 +175,6 @@ export function CollectionEditClient({
             </div>
           </div>
 
-          {/* Content */}
           <CollectionDefinitionEditor
             config={config}
             onChange={handleConfigChange}

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { FieldConfig, FieldType } from "@/lib/types";
 import {
   getOptionsForFieldType,
@@ -34,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { slugifyFieldName } from "@/lib/utils";
+import { useEffect, useMemo, useState } from "react";
 
 interface FieldEditorDialogProps {
   open: boolean;
@@ -52,50 +52,39 @@ export function FieldEditorDialog({
 }: FieldEditorDialogProps) {
   const isEditing = !!field;
 
-  // Base field data
-  const [label, setLabel] = React.useState("");
-  const [type, setType] = React.useState<FieldType>(FieldType.Text);
-  const [required, setRequired] = React.useState(false);
-  const [description, setDescription] = React.useState("");
+  const [label, setLabel] = useState("");
+  const [type, setType] = useState<FieldType>(FieldType.Text);
+  const [required, setRequired] = useState(false);
+  const [description, setDescription] = useState("");
 
-  // Auto-generate slug from label (snake_case for object properties)
-  const slug = React.useMemo(() => slugifyFieldName(label), [label]);
+  const slug = useMemo(() => slugifyFieldName(label), [label]);
 
-  // Options data (stored as key-value map internally, converted to array on save)
-  const [optionsData, setOptionsData] = React.useState<
+  const [optionsData, setOptionsData] = useState<
     Record<string, FieldOptionValue>
   >({});
 
-  // Validation state
-  const [validationError, setValidationError] = React.useState<string | null>(
-    null,
-  );
+  const [validationError, setValidationError] = useState<string | null>(null);
   const slugIsDuplicate = !isEditing && !!slug && existingSlugs.includes(slug);
 
-  // Initialize form from field prop
-  React.useEffect(() => {
+  useEffect(() => {
     if (field) {
       setLabel(field.label);
       setType(field.type);
       setRequired(field.required);
       setDescription(field.description ?? "");
-      // Use utility function to convert field config to options map
       setOptionsData(fieldConfigToOptionsMap(field));
     } else {
-      // Reset to defaults for new field
       setLabel("");
       setType(FieldType.Text);
       setRequired(false);
       setDescription("");
       setOptionsData({});
     }
-    // Clear validation errors when dialog opens/closes or field changes
     setValidationError(null);
   }, [field, open]);
 
   const handleTypeChange = (newType: FieldType) => {
     setType(newType);
-    // Reset options when changing type
     setOptionsData({});
   };
 
@@ -107,13 +96,11 @@ export function FieldEditorDialog({
       return;
     }
 
-    // Check for duplicate slug
     if (slugIsDuplicate) {
       setValidationError("A field with this slug already exists");
       return;
     }
 
-    // Use utility function to convert options map to field options array
     const optionsArray = optionsMapToFieldOptions(optionsData);
 
     const fieldConfig: FieldConfig = {
@@ -125,7 +112,6 @@ export function FieldEditorDialog({
       options: optionsArray.length > 0 ? optionsArray : undefined,
     };
 
-    // Validate field config before saving
     const validationResult = fieldConfigSchema.safeParse(fieldConfig);
     if (!validationResult.success) {
       const errorMessage = validationResult.error.issues[0].message;
@@ -133,7 +119,6 @@ export function FieldEditorDialog({
       return;
     }
 
-    // All validation passed - save and close
     onSave(validationResult.data as FieldConfig);
     onOpenChange(false);
   };
@@ -244,7 +229,6 @@ export function FieldEditorDialog({
             />
           </div>
 
-          {/* Render all options dynamically using component registry */}
           {availableOptions.map((optionKey) => {
             const uiConfig = getOptionUIConfig(optionKey);
             const InputComponent = OPTION_INPUT_COMPONENTS[uiConfig.valueType];

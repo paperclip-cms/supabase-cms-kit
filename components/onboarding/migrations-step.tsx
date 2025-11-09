@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
@@ -9,6 +8,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
+import { useState } from "react";
 
 type MigrationsStepProps = {
   onNext: () => void;
@@ -16,8 +16,8 @@ type MigrationsStepProps = {
 };
 
 export function MigrationsStep({ onNext, isComplete }: MigrationsStepProps) {
-  const [isChecking, setIsChecking] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [isChecking, setIsChecking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleCheck = async () => {
     setIsChecking(true);

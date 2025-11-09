@@ -1,11 +1,11 @@
 "use client";
 
-import * as React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, XIcon } from "lucide-react";
 import type { OptionInputProps } from "./index";
+import { useState } from "react";
 
 /**
  * Input component for string array options (file accept types, etc.)
@@ -15,7 +15,7 @@ export function StringArrayOptionInput({
   onChange,
   config,
 }: OptionInputProps) {
-  const [input, setInput] = React.useState("");
+  const [input, setInput] = useState("");
   const items = Array.isArray(value) ? (value as string[]) : [];
 
   const handleAdd = () => {
