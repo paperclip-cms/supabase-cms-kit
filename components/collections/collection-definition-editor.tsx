@@ -1,10 +1,9 @@
 "use client";
 
-import {
-  FieldConfig,
-  CollectionConfig,
-  BuiltInFieldSettings,
-} from "@/lib/types";
+import { useState } from "react";
+import { useFormContext, useFieldArray } from "react-hook-form";
+import type { CollectionEditFormData } from "@/lib/collection-edit-schema";
+import type { FieldConfig, BuiltInFieldSettings } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FieldEditorDialog } from "./field-editor-dialog";
@@ -13,32 +12,24 @@ import { PlusIcon } from "lucide-react";
 import { toast } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BUILT_IN_FIELDS } from "@/lib/field-options";
-import { useEffect, useState } from "react";
 
-interface CollectionDefinitionEditorProps {
-  config: CollectionConfig;
-  onChange: (config: CollectionConfig) => void;
-}
+export function CollectionDefinitionEditor() {
+  const form = useFormContext<CollectionEditFormData>();
 
-export function CollectionDefinitionEditor({
-  config,
-  onChange,
-}: CollectionDefinitionEditorProps) {
-  const [customFields, setCustomFields] = useState<FieldConfig[]>(
-    config.customFields || [],
-  );
+  const { fields, append, update, remove } = useFieldArray({
+    control: form.control,
+    name: "customFields",
+  });
+
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingField, setEditingField] = useState<FieldConfig | undefined>();
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
 
-  // Initialize built-in field settings with defaults
-  const getBuiltInFieldSettings = (slug: string): BuiltInFieldSettings => {
-    return config.builtInFields?.[slug] || { visible: true, required: false };
-  };
+  const builtInFields = form.watch("builtInFields") || {};
 
-  useEffect(() => {
-    setCustomFields(config.customFields || []);
-  }, [config]);
+  const getBuiltInFieldSettings = (slug: string): BuiltInFieldSettings => {
+    return builtInFields[slug] || { visible: true, required: false };
+  };
 
   const handleBuiltInFieldChange = (
     slug: string,
@@ -47,45 +38,40 @@ export function CollectionDefinitionEditor({
     const currentSettings = getBuiltInFieldSettings(slug);
     const newSettings = { ...currentSettings, ...settings };
 
-    onChange({
-      ...config,
-      builtInFields: {
-        ...config.builtInFields,
+    form.setValue(
+      "builtInFields",
+      {
+        ...builtInFields,
         [slug]: newSettings,
       },
-    });
+      { shouldDirty: true },
+    );
   };
 
   const handleAddField = () => {
-    setEditingField(undefined);
+    console.log("handleAddField called");
+    setEditingIndex(null);
     setDialogOpen(true);
   };
 
-  const handleEditField = (field: FieldConfig) => {
-    setEditingField(field);
+  const handleEditField = (index: number) => {
+    setEditingIndex(index);
     setDialogOpen(true);
   };
 
   const handleSaveField = (field: FieldConfig) => {
-    let updated: FieldConfig[];
-
-    if (editingField) {
-      updated = customFields.map((f) =>
-        f.slug === editingField.slug ? field : f,
-      );
+    if (editingIndex !== null) {
+      update(editingIndex, field);
+      toast.success("Field updated");
     } else {
-      updated = [...customFields, field];
+      append(field);
+      toast.success("Field added");
     }
-
-    setCustomFields(updated);
-    onChange({ ...config, customFields: updated });
-    toast.success(editingField ? "Field updated" : "Field added");
+    setDialogOpen(false);
   };
 
-  const handleDeleteField = (slug: string) => {
-    const updated = customFields.filter((f) => f.slug !== slug);
-    setCustomFields(updated);
-    onChange({ ...config, customFields: updated });
+  const handleDeleteField = (index: number) => {
+    remove(index);
     toast.success("Field removed");
   };
 
@@ -155,13 +141,13 @@ export function CollectionDefinitionEditor({
                 Add fields specific to this collection
               </p>
             </div>
-            <Button onClick={handleAddField} size="sm">
+            <Button type="button" onClick={handleAddField} size="sm">
               <PlusIcon />
               Add Field
             </Button>
           </div>
 
-          {customFields.length === 0 ? (
+          {fields.length === 0 ? (
             <div className="border border-dashed rounded-lg p-8 text-center">
               <p className="text-sm text-muted-foreground">
                 No custom fields yet. Add your first custom field to get
@@ -171,16 +157,16 @@ export function CollectionDefinitionEditor({
           ) : (
             <div className="border rounded-lg">
               <div className="divide-y">
-                {customFields.map((field) => (
+                {fields.map((field, index) => (
                   <FieldRow
-                    key={field.slug}
+                    key={field.id}
                     field={field}
                     isBuiltIn={false}
                     required={field.required}
                     copiedSlug={copiedSlug}
                     onCopySlug={handleCopySlug}
-                    onEdit={handleEditField}
-                    onDelete={handleDeleteField}
+                    onEdit={() => handleEditField(index)}
+                    onDelete={() => handleDeleteField(index)}
                   />
                 ))}
               </div>
@@ -191,11 +177,15 @@ export function CollectionDefinitionEditor({
         <FieldEditorDialog
           open={dialogOpen}
           onOpenChange={setDialogOpen}
-          field={editingField}
+          field={
+            editingIndex !== null
+              ? (fields[editingIndex] as FieldConfig)
+              : undefined
+          }
           onSave={handleSaveField}
           existingSlugs={[
             ...BUILT_IN_FIELDS.map((f) => f.slug),
-            ...customFields.map((f) => f.slug),
+            ...fields.map((f) => f.slug),
           ]}
         />
       </div>

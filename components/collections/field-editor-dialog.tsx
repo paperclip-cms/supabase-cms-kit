@@ -53,28 +53,36 @@ export function FieldEditorDialog({
   const isEditing = !!field;
 
   const [label, setLabel] = useState("");
+  const [slug, setSlug] = useState("");
   const [type, setType] = useState<FieldType>(FieldType.Text);
   const [required, setRequired] = useState(false);
   const [description, setDescription] = useState("");
 
-  const slug = useMemo(() => slugifyFieldName(label), [label]);
+  const autoSlug = useMemo(() => slugifyFieldName(label), [label]);
+  const originalSlug = field?.slug;
 
   const [optionsData, setOptionsData] = useState<
     Record<string, FieldOptionValue>
   >({});
 
   const [validationError, setValidationError] = useState<string | null>(null);
-  const slugIsDuplicate = !isEditing && !!slug && existingSlugs.includes(slug);
+
+  const slugIsDuplicate =
+    !!slug && existingSlugs.filter((s) => s !== originalSlug).includes(slug);
+
+  const slugHasChanged = isEditing && slug && slug !== originalSlug;
 
   useEffect(() => {
     if (field) {
       setLabel(field.label);
+      setSlug(field.slug);
       setType(field.type);
       setRequired(field.required);
       setDescription(field.description ?? "");
       setOptionsData(fieldConfigToOptionsMap(field));
     } else {
       setLabel("");
+      setSlug("");
       setType(FieldType.Text);
       setRequired(false);
       setDescription("");
@@ -82,6 +90,12 @@ export function FieldEditorDialog({
     }
     setValidationError(null);
   }, [field, open]);
+
+  useEffect(() => {
+    if (!isEditing) {
+      setSlug(autoSlug);
+    }
+  }, [isEditing, autoSlug]);
 
   const handleTypeChange = (newType: FieldType) => {
     setType(newType);
@@ -99,6 +113,16 @@ export function FieldEditorDialog({
     if (slugIsDuplicate) {
       setValidationError("A field with this slug already exists");
       return;
+    }
+
+    if (type === FieldType.Select || type === FieldType.MultiSelect) {
+      const choices = optionsData.choices as
+        | Array<{ label: string; value: string }>
+        | undefined;
+      if (!choices || choices.length === 0) {
+        setValidationError(`${type} fields must have at least one choice`);
+        return;
+      }
     }
 
     const optionsArray = optionsMapToFieldOptions(optionsData);
@@ -170,12 +194,21 @@ export function FieldEditorDialog({
                 id="field-slug"
                 placeholder="field_slug"
                 value={slug}
-                disabled
-                className="bg-muted text-muted-foreground cursor-not-allowed font-mono"
+                onChange={(e) => setSlug(e.target.value)}
+                className="font-mono"
               />
               {slugIsDuplicate ? (
                 <p className="text-xs text-destructive">
                   A field with this slug already exists
+                </p>
+              ) : slugHasChanged ? (
+                <p className="text-xs text-amber-600 dark:text-amber-500">
+                  ⚠️ Changing the slug may break existing content that
+                  references this field
+                </p>
+              ) : isEditing ? (
+                <p className="text-xs text-muted-foreground">
+                  Field identifier
                 </p>
               ) : (
                 <p className="text-xs text-muted-foreground">

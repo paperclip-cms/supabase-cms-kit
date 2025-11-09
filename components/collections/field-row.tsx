@@ -31,10 +31,6 @@ interface FieldRowProps {
   onDelete?: (slug: string) => void;
 }
 
-/**
- * Unified field row component for both built-in and custom fields
- * Eliminates duplicate rendering logic
- */
 export function FieldRow({
   field,
   settings,
@@ -53,7 +49,6 @@ export function FieldRow({
 
   return (
     <div className="flex items-center gap-4 px-4 py-2.5 hover:bg-accent/50 transition-colors group">
-      {/* Visibility checkbox (built-in fields only) */}
       {isBuiltIn && settings && (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -82,7 +77,6 @@ export function FieldRow({
         </Tooltip>
       )}
 
-      {/* Field info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">{field.label}</span>
@@ -108,7 +102,6 @@ export function FieldRow({
         </div>
       </div>
 
-      {/* Required checkbox (built-in fields only) */}
       {isBuiltIn && settings && (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -139,10 +132,10 @@ export function FieldRow({
         </Tooltip>
       )}
 
-      {/* Actions (custom fields only) */}
       {!isBuiltIn && (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <Button
+            type="button"
             variant="ghost"
             size="icon"
             onClick={() => onEdit?.(field as FieldConfig)}
@@ -150,6 +143,7 @@ export function FieldRow({
             <PencilIcon />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="icon"
             onClick={() => onDelete?.(field.slug)}
