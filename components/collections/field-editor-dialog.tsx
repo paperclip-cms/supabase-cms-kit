@@ -34,13 +34,13 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { slugifyFieldName } from "@/lib/utils";
-import { toast } from "sonner";
 
 interface FieldEditorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   field?: FieldConfig;
   onSave: (field: FieldConfig) => void;
+  existingSlugs?: string[];
 }
 
 export function FieldEditorDialog({
@@ -48,6 +48,7 @@ export function FieldEditorDialog({
   onOpenChange,
   field,
   onSave,
+  existingSlugs = [],
 }: FieldEditorDialogProps) {
   const isEditing = !!field;
 
@@ -64,6 +65,12 @@ export function FieldEditorDialog({
   const [optionsData, setOptionsData] = React.useState<
     Record<string, FieldOptionValue>
   >({});
+
+  // Validation state
+  const [validationError, setValidationError] = React.useState<string | null>(
+    null,
+  );
+  const slugIsDuplicate = !isEditing && !!slug && existingSlugs.includes(slug);
 
   // Initialize form from field prop
   React.useEffect(() => {
@@ -82,6 +89,8 @@ export function FieldEditorDialog({
       setDescription("");
       setOptionsData({});
     }
+    // Clear validation errors when dialog opens/closes or field changes
+    setValidationError(null);
   }, [field, open]);
 
   const handleTypeChange = (newType: FieldType) => {
@@ -91,8 +100,16 @@ export function FieldEditorDialog({
   };
 
   const handleSave = () => {
+    setValidationError(null);
+
     if (!slug || !label) {
-      toast.error("Field label is required");
+      setValidationError("Field label is required");
+      return;
+    }
+
+    // Check for duplicate slug
+    if (slugIsDuplicate) {
+      setValidationError("A field with this slug already exists");
       return;
     }
 
@@ -112,11 +129,11 @@ export function FieldEditorDialog({
     const validationResult = fieldConfigSchema.safeParse(fieldConfig);
     if (!validationResult.success) {
       const errorMessage = validationResult.error.issues[0].message;
-      toast.error(errorMessage);
+      setValidationError(errorMessage);
       return;
     }
 
-    // Cast validated data back to FieldConfig for consistency
+    // All validation passed - save and close
     onSave(validationResult.data as FieldConfig);
     onOpenChange(false);
   };
@@ -144,6 +161,12 @@ export function FieldEditorDialog({
           </DialogDescription>
         </DialogHeader>
 
+        {validationError && (
+          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+            {validationError}
+          </div>
+        )}
+
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -165,9 +188,15 @@ export function FieldEditorDialog({
                 disabled
                 className="bg-muted text-muted-foreground cursor-not-allowed font-mono"
               />
-              <p className="text-xs text-muted-foreground">
-                Auto-generated from label
-              </p>
+              {slugIsDuplicate ? (
+                <p className="text-xs text-destructive">
+                  A field with this slug already exists
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Auto-generated from label
+                </p>
+              )}
             </div>
           </div>
 
@@ -247,7 +276,7 @@ export function FieldEditorDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>
+          <Button onClick={handleSave} disabled={slugIsDuplicate}>
             {isEditing ? "Save Changes" : "Add Field"}
           </Button>
         </DialogFooter>

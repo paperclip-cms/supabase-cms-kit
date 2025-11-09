@@ -131,11 +131,7 @@ export function CollectionDefinitionEditor({
         f.slug === editingField.slug ? field : f,
       );
     } else {
-      // Adding new field - check for duplicate slug
-      if (customFields.some((f) => f.slug === field.slug)) {
-        toast.error("A field with this slug already exists");
-        return;
-      }
+      // Adding new field
       updated = [...customFields, field];
     }
 
@@ -259,6 +255,10 @@ export function CollectionDefinitionEditor({
           onOpenChange={setDialogOpen}
           field={editingField}
           onSave={handleSaveField}
+          existingSlugs={[
+            ...BUILT_IN_FIELDS.map((f) => f.slug),
+            ...customFields.map((f) => f.slug),
+          ]}
         />
       </div>
     </TooltipProvider>

@@ -12,5 +12,11 @@ export default async function CollectionsPage() {
     return <div>Error loading collections</div>;
   }
 
-  return <CollectionsList collections={collections || []} />;
+  return (
+    <div className="w-full flex justify-center p-8">
+      <div className="w-full max-w-7xl">
+        <CollectionsList collections={collections || []} />
+      </div>
+    </div>
+  );
 }
