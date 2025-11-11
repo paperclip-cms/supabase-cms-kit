@@ -21,6 +21,8 @@ export default async function EditItemPage({
     itemSlug,
   );
 
+  console.log('item', item);
+
   if (error || !item) {
     console.error(error);
     notFound();

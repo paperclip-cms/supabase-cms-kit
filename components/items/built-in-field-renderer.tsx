@@ -1,3 +1,5 @@
+"use client";
+
 import { UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { BuiltInField } from "@/lib/field-options";
@@ -12,7 +14,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ImageUpload, UploadedImage } from "@/components/media/image-upload";
+import { ImageUpload } from "@/components/media/image-upload";
+import { useImageFieldState } from "@/components/media/use-image-field-state";
 import { toast } from "sonner";
 
 /**
@@ -81,22 +84,16 @@ export function renderBuiltInField(
 
     case "cover": {
       const coverValue = form.watch("cover");
-      const images: UploadedImage[] = coverValue
-        ? [
-            {
-              url: coverValue,
-              path: coverValue,
-              name: "cover",
-            },
-          ]
-        : [];
+      const { images, handleImagesChange } = useImageFieldState(
+        coverValue || "",
+        (newValue) => form.setValue("cover", newValue as string),
+        1,
+      );
 
       return (
         <ImageUpload
           images={images}
-          onImagesChange={(newImages) => {
-            form.setValue("cover", newImages[0]?.url || "");
-          }}
+          onImagesChange={handleImagesChange}
           maxImages={1}
           onSuccess={(message) => toast.success(message)}
           onError={(message) => toast.error(message)}
