@@ -26,6 +26,7 @@ export function ItemEditor({
   collectionConfig,
 }: ItemEditorProps) {
   const [isSaving, setIsSaving] = useState(false);
+  const [showAllProperties, setShowAllProperties] = useState(false);
   const router = useRouter();
 
   type ItemFormInput = z.input<typeof itemSchema>;
@@ -228,6 +229,101 @@ export function ItemEditor({
                   </p>
                 </div>
               </div>
+            )}
+
+            {/* Hidden Properties Toggle */}
+            {(!isAuthorVisible || !isDateVisible || !isCoverVisible || !isTagsVisible) && (
+              <div className="flex items-center gap-4">
+                <div className="min-w-[80px]" />
+                <button
+                  type="button"
+                  onClick={() => setShowAllProperties(!showAllProperties)}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  {showAllProperties ? "− Hide" : "+ Add"} properties
+                </button>
+              </div>
+            )}
+
+            {/* Hidden Built-in Fields */}
+            {showAllProperties && (
+              <>
+                {!isAuthorVisible && (
+                  <div className="flex items-center gap-4 opacity-60 hover:opacity-100 transition-opacity">
+                    <label className="text-sm font-medium text-muted-foreground min-w-[80px]">
+                      Author
+                    </label>
+                    <div className="flex-1 max-w-md">
+                      <Input
+                        {...form.register("author")}
+                        placeholder="Author name"
+                        className="text-sm"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {!isDateVisible && (
+                  <div className="flex items-center gap-4 opacity-60 hover:opacity-100 transition-opacity">
+                    <label className="text-sm font-medium text-muted-foreground min-w-[80px]">
+                      Date
+                    </label>
+                    <div className="flex-1 max-w-xs">
+                      <Input
+                        {...form.register("date")}
+                        type="date"
+                        className="text-sm"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {!isCoverVisible && (
+                  <div className="flex items-start gap-4 opacity-60 hover:opacity-100 transition-opacity">
+                    <label className="text-sm font-medium text-muted-foreground min-w-[80px] pt-2">
+                      Cover
+                    </label>
+                    <div className="flex-1 max-w-md space-y-2">
+                      <Input
+                        {...form.register("cover")}
+                        placeholder="https://example.com/image.jpg"
+                        className="text-sm"
+                      />
+                      {form.watch("cover") && (
+                        <img
+                          src={form.watch("cover")}
+                          alt="Cover"
+                          className="max-w-xs rounded-lg border"
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {!isTagsVisible && (
+                  <div className="flex items-start gap-4 opacity-60 hover:opacity-100 transition-opacity">
+                    <label className="text-sm font-medium text-muted-foreground min-w-[80px] pt-2">
+                      Tags
+                    </label>
+                    <div className="flex-1 max-w-md">
+                      <Input
+                        placeholder="tag1, tag2, tag3"
+                        onChange={(e) => {
+                          const tags = e.target.value
+                            .split(",")
+                            .map((t) => t.trim())
+                            .filter(Boolean);
+                          form.setValue("tags", tags);
+                        }}
+                        className="text-sm"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Separate with commas
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Non-RichText Custom Fields */}
