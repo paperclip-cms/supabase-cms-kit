@@ -80,7 +80,7 @@ export function ItemEditor({
   // Check which built-in fields are visible
   const isTitleVisible = builtInFieldSettings.title?.visible !== false; // Default true
   const isAuthorVisible = builtInFieldSettings.author?.visible === true;
-  const isContentVisible = builtInFieldSettings.content?.visible === true;
+  const isContentVisible = builtInFieldSettings.content?.visible !== false; // Default true - always show unless explicitly hidden
   const isDateVisible = builtInFieldSettings.date?.visible === true;
   const isTagsVisible = builtInFieldSettings.tags?.visible === true;
   const isCoverVisible = builtInFieldSettings.cover?.visible === true;
