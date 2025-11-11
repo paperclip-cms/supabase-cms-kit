@@ -49,7 +49,6 @@ export function CollectionDefinitionEditor() {
   };
 
   const handleAddField = () => {
-    console.log("handleAddField called");
     setEditingIndex(null);
     setDialogOpen(true);
   };

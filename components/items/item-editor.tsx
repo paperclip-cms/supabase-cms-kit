@@ -149,7 +149,6 @@ export function ItemEditor({
       );
       setIsSaving(false);
     } finally {
-      console.log("finally");
     }
   });
 

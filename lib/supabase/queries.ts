@@ -32,7 +32,6 @@ export function getItemWithCollectionQuery(
   collectionSlug: string,
   itemSlug: string,
 ) {
-  console.log('getItemWithCollectionQuery', collectionSlug, itemSlug);
   return supabase
     .from("items")
     .select(

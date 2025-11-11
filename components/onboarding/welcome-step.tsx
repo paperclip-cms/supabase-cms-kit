@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { LogoWithBadge } from "@/components/branding/logo-with-badge";
-import { Zap, ExternalLink, Info } from "lucide-react";
+import { ExternalLink, Info } from "lucide-react";
 import { useOnboarding } from "@/lib/contexts/onboarding-context";
 import { Switch } from "@/components/ui/switch";
 import {

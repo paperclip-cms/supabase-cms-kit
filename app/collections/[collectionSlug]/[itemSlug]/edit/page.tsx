@@ -21,8 +21,6 @@ export default async function EditItemPage({
     itemSlug,
   );
 
-  console.log('item', item);
-
   if (error || !item) {
     console.error(error);
     notFound();
@@ -39,7 +37,10 @@ export default async function EditItemPage({
           items={[
             { label: "Collections", href: "/collections" },
             { label: collectionLabel, href: `/collections/${collectionSlug}` },
-            { label: item.title, href: `/collections/${collectionSlug}/${itemSlug}` },
+            {
+              label: item.title,
+              href: `/collections/${collectionSlug}/${itemSlug}`,
+            },
           ]}
           currentPage="Edit"
           className="mb-8"

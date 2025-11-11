@@ -241,9 +241,7 @@ export function ItemView({ item, collectionConfig }: ItemViewProps) {
       {/* Timestamps */}
       <div className="text-xs text-muted-foreground space-y-1 pt-8 border-t">
         {item.published_at && (
-          <div>
-            Published: {format(new Date(item.published_at), "PPPp")}
-          </div>
+          <div>Published: {format(new Date(item.published_at), "PPPp")}</div>
         )}
         <div>Created: {format(new Date(item.created_at), "PPPp")}</div>
         <div>Updated: {format(new Date(item.updated_at), "PPPp")}</div>

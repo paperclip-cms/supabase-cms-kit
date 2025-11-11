@@ -4,7 +4,6 @@ import {
   OPTION_UI_CONFIG,
   OptionValueType,
   type OptionKey,
-  BUILT_IN_FIELDS,
 } from "./field-options";
 
 /**

@@ -14,9 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ImageUpload } from "@/components/media/image-upload";
-import { useImageFieldState } from "@/components/media/use-image-field-state";
-import { toast } from "sonner";
+import { CoverFieldInput } from "./field-inputs/cover-field-input";
 
 /**
  * Renders the input for a built-in field based on its type.
@@ -82,24 +80,8 @@ export function renderBuiltInField(
       );
     }
 
-    case "cover": {
-      const coverValue = form.watch("cover");
-      const { images, handleImagesChange } = useImageFieldState(
-        coverValue || "",
-        (newValue) => form.setValue("cover", newValue as string),
-        1,
-      );
-
-      return (
-        <ImageUpload
-          images={images}
-          onImagesChange={handleImagesChange}
-          maxImages={1}
-          onSuccess={(message) => toast.success(message)}
-          onError={(message) => toast.error(message)}
-        />
-      );
-    }
+    case "cover":
+      return <CoverFieldInput form={form} />;
 
     case "tags":
       return (

@@ -75,14 +75,15 @@ export function CollectionEditClient({
         customFields: data.customFields as FieldConfig[],
       });
 
-      console.log(configResult)
-
       if (!configResult.success) {
         toast.error("Failed to update collection configuration");
         return;
       }
 
-      if (isDirty && (form.formState.dirtyFields.label || form.formState.dirtyFields.icon)) {
+      if (
+        isDirty &&
+        (form.formState.dirtyFields.label || form.formState.dirtyFields.icon)
+      ) {
         const metadataResult = await updateCollectionMetadata(collection.slug, {
           label: data.label,
           icon: data.icon,
