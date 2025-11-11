@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RichTextEditor } from "./rich-text-editor";
 import { FieldInput } from "./field-inputs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2Icon, SaveIcon } from "lucide-react";
 import { BUILT_IN_FIELDS } from "@/lib/field-options";
@@ -96,160 +96,163 @@ export function ItemEditor({
     (f) => f.type !== FieldType.RichText
   );
 
-  // Generate slug from title
+  // Auto-generate slug from title
   const watchTitle = form.watch("title");
-  const handleGenerateSlug = () => {
-    const slug = watchTitle
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-    form.setValue("slug", slug);
-  };
+  const watchSlug = form.watch("slug");
+
+  useEffect(() => {
+    // Only auto-generate if slug is empty or hasn't been manually edited
+    if (watchTitle && !watchSlug) {
+      const slug = watchTitle
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+      form.setValue("slug", slug, { shouldValidate: false });
+    }
+  }, [watchTitle, watchSlug, form]);
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={handleSave} className="w-full max-w-4xl mx-auto">
+      <form onSubmit={handleSave} className="w-full max-w-4xl mx-auto pb-24">
         {/* Notion-style layout */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Title Section - Always at the top, Notion-style */}
           {isTitleVisible && (
             <div>
               <Input
                 {...form.register("title")}
                 placeholder={`${collectionLabel} title...`}
-                className="text-4xl font-bold border-none px-0 py-2 focus-visible:ring-0 placeholder:text-muted-foreground/40"
+                className="text-5xl font-bold border-none shadow-none px-0 py-3 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/30"
               />
               {form.formState.errors.title && (
-                <p className="text-sm text-destructive mt-1">
+                <p className="text-sm text-destructive mt-2">
                   {form.formState.errors.title.message}
                 </p>
               )}
             </div>
           )}
 
-          {/* Metadata Section - Fields at the top */}
-          <div className="space-y-6 pb-6 border-b">
+          {/* Metadata Section - Compact properties */}
+          <div className="space-y-4">
             {/* Slug */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-muted-foreground min-w-[80px]">
                 Slug
               </label>
-              <div className="flex gap-2">
+              <div className="flex-1 max-w-md">
                 <Input
                   {...form.register("slug")}
-                  placeholder="item-slug"
-                  className="flex-1"
+                  placeholder="auto-generated-slug"
+                  className="text-sm"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleGenerateSlug}
-                  disabled={!watchTitle}
-                >
-                  Generate
-                </Button>
+                {form.formState.errors.slug && (
+                  <p className="text-xs text-destructive mt-1">
+                    {form.formState.errors.slug.message}
+                  </p>
+                )}
               </div>
-              {form.formState.errors.slug && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.slug.message}
-                </p>
-              )}
             </div>
 
             {/* Built-in Fields */}
             {isAuthorVisible && (
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
+              <div className="flex items-center gap-4">
+                <label className="text-sm font-medium text-muted-foreground min-w-[80px]">
                   Author
                 </label>
-                <Input
-                  {...form.register("author")}
-                  placeholder="Author name"
-                  className="mt-2"
-                />
+                <div className="flex-1 max-w-md">
+                  <Input
+                    {...form.register("author")}
+                    placeholder="Author name"
+                    className="text-sm"
+                  />
+                </div>
               </div>
             )}
 
             {isDateVisible && (
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
+              <div className="flex items-center gap-4">
+                <label className="text-sm font-medium text-muted-foreground min-w-[80px]">
                   Date
                 </label>
-                <Input
-                  {...form.register("date")}
-                  type="date"
-                  className="mt-2"
-                />
+                <div className="flex-1 max-w-xs">
+                  <Input
+                    {...form.register("date")}
+                    type="date"
+                    className="text-sm"
+                  />
+                </div>
               </div>
             )}
 
             {isCoverVisible && (
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Cover Image
+              <div className="flex items-start gap-4">
+                <label className="text-sm font-medium text-muted-foreground min-w-[80px] pt-2">
+                  Cover
                 </label>
-                <Input
-                  {...form.register("cover")}
-                  placeholder="https://example.com/image.jpg"
-                  className="mt-2"
-                />
-                {form.watch("cover") && (
-                  <div className="mt-2">
+                <div className="flex-1 max-w-md space-y-2">
+                  <Input
+                    {...form.register("cover")}
+                    placeholder="https://example.com/image.jpg"
+                    className="text-sm"
+                  />
+                  {form.watch("cover") && (
                     <img
                       src={form.watch("cover")}
                       alt="Cover"
                       className="max-w-xs rounded-lg border"
                     />
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             )}
 
             {isTagsVisible && (
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
+              <div className="flex items-start gap-4">
+                <label className="text-sm font-medium text-muted-foreground min-w-[80px] pt-2">
                   Tags
                 </label>
-                <Input
-                  placeholder="tag1, tag2, tag3"
-                  onChange={(e) => {
-                    const tags = e.target.value
-                      .split(",")
-                      .map((t) => t.trim())
-                      .filter(Boolean);
-                    form.setValue("tags", tags);
-                  }}
-                  className="mt-2"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Separate tags with commas
-                </p>
+                <div className="flex-1 max-w-md">
+                  <Input
+                    placeholder="tag1, tag2, tag3"
+                    onChange={(e) => {
+                      const tags = e.target.value
+                        .split(",")
+                        .map((t) => t.trim())
+                        .filter(Boolean);
+                      form.setValue("tags", tags);
+                    }}
+                    className="text-sm"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Separate with commas
+                  </p>
+                </div>
               </div>
             )}
 
             {/* Non-RichText Custom Fields */}
             {nonRichTextFields.map((field) => (
-              <div key={field.slug}>
-                <FieldInput
-                  field={field}
-                  value={form.watch(`item_data.${field.slug}` as any)}
-                  onChange={(value) =>
-                    form.setValue(`item_data.${field.slug}` as any, value)
-                  }
-                  error={
-                    form.formState.errors.item_data?.[field.slug]?.message
-                  }
-                />
+              <div key={field.slug} className="flex items-start gap-4">
+                <div className="min-w-[80px]" />
+                <div className="flex-1">
+                  <FieldInput
+                    field={field}
+                    value={form.watch(`item_data.${field.slug}` as any)}
+                    onChange={(value) =>
+                      form.setValue(`item_data.${field.slug}` as any, value)
+                    }
+                    error={
+                      form.formState.errors.item_data?.[field.slug]?.message
+                    }
+                  />
+                </div>
               </div>
             ))}
           </div>
 
           {/* Content Section - Notion-style, main content area */}
           {isContentVisible && (
-            <div>
-              <label className="text-sm font-medium text-muted-foreground block mb-2">
-                Content
-              </label>
+            <div className="pt-4">
               <RichTextEditor
                 content={form.watch("content") || ""}
                 onChange={(content) => form.setValue("content", content)}
@@ -265,7 +268,7 @@ export function ItemEditor({
 
           {/* Additional Rich Text Fields */}
           {richTextFields.map((field) => (
-            <div key={field.slug}>
+            <div key={field.slug} className="pt-2">
               <FieldInput
                 field={field}
                 value={form.watch(`item_data.${field.slug}` as any)}
@@ -276,12 +279,14 @@ export function ItemEditor({
               />
             </div>
           ))}
+        </div>
 
-          {/* Actions */}
-          <div className="flex items-center justify-between pt-6 border-t sticky bottom-0 bg-background pb-6">
+        {/* Floating Actions Bar */}
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-background/80 backdrop-blur-sm">
+          <div className="w-full max-w-4xl mx-auto px-8 py-4 flex items-center justify-between">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               onClick={() => router.back()}
               disabled={isSaving}
             >
@@ -297,7 +302,7 @@ export function ItemEditor({
                 }}
                 disabled={isSaving}
               >
-                Save as Draft
+                Save Draft
               </Button>
               <Button
                 type="button"
@@ -310,7 +315,7 @@ export function ItemEditor({
                 {isSaving ? (
                   <>
                     <Loader2Icon className="size-4 mr-2 animate-spin" />
-                    Saving...
+                    Publishing...
                   </>
                 ) : (
                   <>
