@@ -37,6 +37,7 @@ export function RichTextEditor({
   outputFormat = "html",
 }: RichTextEditorProps) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         heading: {
