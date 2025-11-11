@@ -62,17 +62,17 @@ export function CollectionDefinitionEditor() {
   const handleSaveField = (field: FieldConfig) => {
     if (editingIndex !== null) {
       update(editingIndex, field);
-      toast.success("Field updated");
+      // toast.success("Field updated");
     } else {
       append(field);
-      toast.success("Field added");
+      // toast.success("Field added");
     }
     setDialogOpen(false);
   };
 
   const handleDeleteField = (index: number) => {
     remove(index);
-    toast.success("Field removed");
+    // toast.success("Field removed");
   };
 
   const handleCopySlug = async (slug: string) => {
@@ -108,25 +108,32 @@ export function CollectionDefinitionEditor() {
             </div>
 
             <div className="divide-y">
-              {BUILT_IN_FIELDS.sort((a, b) =>
-                a.category === "core" ? -1 : b.category === "core" ? 1 : 0,
-              ).map((field) => (
-                <FieldRow
-                  key={field.slug}
-                  field={field}
-                  settings={getBuiltInFieldSettings(field.slug)}
-                  isBuiltIn={true}
-                  isCore={field.category === "core"}
-                  copiedSlug={copiedSlug}
-                  onCopySlug={handleCopySlug}
-                  onVisibilityChange={(visible, required) =>
-                    handleBuiltInFieldChange(field.slug, { visible, required })
-                  }
-                  onRequiredChange={(required) =>
-                    handleBuiltInFieldChange(field.slug, { required })
-                  }
-                />
-              ))}
+              {[...BUILT_IN_FIELDS]
+                .sort((a, b) => {
+                  if (a.category === "core" && b.category !== "core") return -1;
+                  if (a.category !== "core" && b.category === "core") return 1;
+                  return a.slug.localeCompare(b.slug);
+                })
+                .map((field) => (
+                  <FieldRow
+                    key={field.slug}
+                    field={field}
+                    settings={getBuiltInFieldSettings(field.slug)}
+                    isBuiltIn={true}
+                    isCore={field.category === "core"}
+                    copiedSlug={copiedSlug}
+                    onCopySlug={handleCopySlug}
+                    onVisibilityChange={(visible, required) =>
+                      handleBuiltInFieldChange(field.slug, {
+                        visible,
+                        required,
+                      })
+                    }
+                    onRequiredChange={(required) =>
+                      handleBuiltInFieldChange(field.slug, { required })
+                    }
+                  />
+                ))}
             </div>
           </div>
         </div>

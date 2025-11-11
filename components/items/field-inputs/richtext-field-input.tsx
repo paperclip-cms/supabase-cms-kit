@@ -18,12 +18,14 @@ export function RichTextFieldInput({
   error,
 }: RichTextFieldInputProps) {
   const placeholder =
-    field.options?.find((opt) => opt.type === "placeholder")?.value?.toString() ||
-    "Start writing...";
+    field.options
+      ?.find((opt) => opt.type === "placeholder")
+      ?.value?.toString() || "Start writing...";
 
   const outputFormat =
-    (field.options?.find((opt) => opt.type === "defaultOutput")?.value?.toString() as "markdown" | "html") ||
-    "html";
+    (field.options
+      ?.find((opt) => opt.type === "defaultOutput")
+      ?.value?.toString() as "markdown" | "html") || "html";
 
   return (
     <div className="space-y-2">

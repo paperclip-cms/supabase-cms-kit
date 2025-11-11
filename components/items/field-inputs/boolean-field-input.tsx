@@ -18,11 +18,7 @@ export function BooleanFieldInput({
 }: BooleanFieldInputProps) {
   return (
     <div className="space-y-1">
-      <Switch
-        id={field.slug}
-        checked={value}
-        onCheckedChange={onChange}
-      />
+      <Switch id={field.slug} checked={value} onCheckedChange={onChange} />
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );

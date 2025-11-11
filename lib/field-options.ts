@@ -115,6 +115,13 @@ export const BUILT_IN_FIELDS: BuiltInField[] = [
     description: "Primary title of the item (required, always visible)",
   },
   {
+    slug: "slug",
+    label: "Slug",
+    type: "text",
+    category: "core",
+    description: "URL-friendly identifier (required, always visible)",
+  },
+  {
     slug: "author",
     label: "Author",
     type: "text",

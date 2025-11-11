@@ -33,6 +33,7 @@ export function JsonFieldInput({
       setJsonError(null);
       onChange(parsed);
     } catch (e) {
+      console.error("Invalid JSON", e);
       setJsonError("Invalid JSON");
     }
   };

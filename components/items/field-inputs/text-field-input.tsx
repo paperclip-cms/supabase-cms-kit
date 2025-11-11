@@ -17,8 +17,9 @@ export function TextFieldInput({
   error,
 }: TextFieldInputProps) {
   const placeholder =
-    field.options?.find((opt) => opt.type === "placeholder")?.value?.toString() ||
-    "";
+    field.options
+      ?.find((opt) => opt.type === "placeholder")
+      ?.value?.toString() || "";
 
   return (
     <div className="space-y-1">

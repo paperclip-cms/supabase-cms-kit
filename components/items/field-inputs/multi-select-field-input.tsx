@@ -17,8 +17,11 @@ export function MultiSelectFieldInput({
   onChange,
   error,
 }: MultiSelectFieldInputProps) {
-  const choices = (field.options?.find((opt) => opt.type === "choices")
-    ?.value as Array<{ label: string; value: string }>) || [];
+  const choices =
+    (field.options?.find((opt) => opt.type === "choices")?.value as Array<{
+      label: string;
+      value: string;
+    }>) || [];
 
   const handleToggle = (choiceValue: string) => {
     const currentValues = value || [];

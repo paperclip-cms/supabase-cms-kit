@@ -34,7 +34,6 @@ export function RichTextEditor({
   onChange,
   placeholder = "Start writing...",
   className,
-  outputFormat = "html",
 }: RichTextEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -101,7 +100,7 @@ export function RichTextEditor({
       disabled={disabled}
       className={cn(
         "p-2 rounded hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
-        active && "bg-accent text-accent-foreground"
+        active && "bg-accent text-accent-foreground",
       )}
     >
       {children}

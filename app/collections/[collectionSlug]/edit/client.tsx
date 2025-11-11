@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { SaveIcon, CheckIcon, PencilIcon } from "lucide-react";
 import { IconPicker } from "@/components/ui/icon-picker";
 import { IconName } from "lucide-react/dynamic";
+import { useNavigationGuard } from "next-navigation-guard";
 
 type Collection = Tables<"collections">;
 
@@ -53,6 +54,8 @@ export function CollectionEditClient({
         []) as CollectionEditFormData["customFields"],
     },
   });
+
+  useNavigationGuard({ enabled: form.formState.isDirty });
 
   const handleCopySlug = async () => {
     await navigator.clipboard.writeText(collection.slug);

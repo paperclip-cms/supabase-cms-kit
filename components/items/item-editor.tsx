@@ -4,16 +4,24 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { itemSchema } from "@/lib/schemas";
 import { z } from "zod";
-import { CollectionConfig, FieldConfig, FieldType } from "@/lib/types";
+import { CollectionConfig, FieldType } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RichTextEditor } from "./rich-text-editor";
 import { FieldInput } from "./field-inputs";
+import { FieldRow } from "./field-row";
+import { renderBuiltInField } from "./built-in-field-renderer";
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2Icon, SaveIcon } from "lucide-react";
+import {
+  getVisibleFields,
+  getHiddenFields,
+  isFieldVisible,
+} from "@/lib/item-fields";
 import { BUILT_IN_FIELDS } from "@/lib/field-options";
 import { slugify } from "@/lib/utils";
+import { useNavigationGuard } from "next-navigation-guard";
 
 interface ItemEditorProps {
   collectionSlug: string;
@@ -32,8 +40,19 @@ export function ItemEditor({
 
   type ItemFormInput = z.input<typeof itemSchema>;
 
+  // Initialize boolean custom fields to false
+  const initialItemData = useMemo(() => {
+    const data: Record<string, unknown> = {};
+    collectionConfig.customFields?.forEach((field) => {
+      if (field.type === FieldType.Boolean) {
+        data[field.slug] = false;
+      }
+    });
+    return data;
+  }, [collectionConfig.customFields]);
+
   const form = useForm<ItemFormInput>({
-    resolver: zodResolver(itemSchema) as any,
+    resolver: zodResolver(itemSchema),
     mode: "onChange",
     defaultValues: {
       slug: "",
@@ -44,8 +63,12 @@ export function ItemEditor({
       tags: [],
       cover: "",
       published: false,
-      item_data: {},
+      item_data: initialItemData,
     },
+  });
+
+  useNavigationGuard({
+    enabled: form.formState.isDirty && !isSaving,
   });
 
   const handleSave = form.handleSubmit(async (data) => {
@@ -87,33 +110,40 @@ export function ItemEditor({
       alert(
         error instanceof Error
           ? error.message
-          : "Failed to save item. Please try again."
+          : "Failed to save item. Please try again.",
       );
-    } finally {
       setIsSaving(false);
+    } finally {
+      console.log("finally");
     }
   });
 
-  // Get built-in field settings
-  const builtInFieldSettings = collectionConfig.builtInFields || {};
+  // Core fields are always visible
+  const slugField = BUILT_IN_FIELDS.find((f) => f.slug === "slug")!;
+  const contentField = BUILT_IN_FIELDS.find((f) => f.slug === "content")!;
 
-  // Check which built-in fields are visible
-  const isTitleVisible = builtInFieldSettings.title?.visible !== false; // Default true
-  const isAuthorVisible = builtInFieldSettings.author?.visible === true;
-  const isContentVisible = builtInFieldSettings.content?.visible !== false; // Default true - always show unless explicitly hidden
-  const isDateVisible = builtInFieldSettings.date?.visible === true;
-  const isTagsVisible = builtInFieldSettings.tags?.visible === true;
-  const isCoverVisible = builtInFieldSettings.cover?.visible === true;
+  // Content can be hidden (it's "core" but optional for some collections)
+  const isContentVisible = isFieldVisible(contentField, collectionConfig);
+
+  // Get optional metadata fields (excluding title, slug, content which are handled separately)
+  const visibleMetadataFields = getVisibleFields(collectionConfig, [
+    "title",
+    "slug",
+    "content",
+  ]);
+  const hiddenMetadataFields = getHiddenFields(collectionConfig, [
+    "title",
+    "slug",
+    "content",
+  ]);
 
   // Get custom fields
   const customFields = collectionConfig.customFields || [];
-
-  // Separate rich text fields from other custom fields
   const richTextFields = customFields.filter(
-    (f) => f.type === FieldType.RichText
+    (f) => f.type === FieldType.RichText,
   );
   const nonRichTextFields = customFields.filter(
-    (f) => f.type !== FieldType.RichText
+    (f) => f.type !== FieldType.RichText,
   );
 
   // Auto-generate slug from title (using useMemo like collection modal)
@@ -132,144 +162,59 @@ export function ItemEditor({
       <form onSubmit={handleSave} className="w-full max-w-4xl mx-auto">
         {/* Notion-style layout */}
         <div className="space-y-8">
-          {/* Title Section - Always at the top, Notion-style */}
-          {isTitleVisible && (
-            <div>
-              <Input
-                {...form.register("title")}
-                placeholder={`${collectionLabel} title...`}
-                className="text-5xl font-bold border-none shadow-none px-0 py-3 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/30"
-              />
-              {form.formState.errors.title && (
-                <p className="text-sm text-destructive mt-2">
-                  {form.formState.errors.title.message}
-                </p>
-              )}
-            </div>
-          )}
+          {/* Title Section - Core field, always visible */}
+          <div>
+            <Input
+              {...form.register("title")}
+              placeholder={`${collectionLabel} title...`}
+              className="text-5xl font-bold border-none shadow-none px-0 py-3 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/30"
+            />
+            {form.formState.errors.title && (
+              <p className="text-sm text-destructive mt-2">
+                {form.formState.errors.title.message as string}
+              </p>
+            )}
+          </div>
 
           {/* Metadata Section - Compact properties */}
           <div className="space-y-4">
-            {/* Slug */}
-            <div className="flex items-center gap-4">
-              <label className="text-sm font-medium text-muted-foreground min-w-[80px]">
-                Slug
-              </label>
-              <div className="flex-1 max-w-md">
-                <Input
-                  {...form.register("slug")}
-                  placeholder="auto-generated-slug"
-                  className="text-sm"
-                />
-                {form.formState.errors.slug && (
-                  <p className="text-xs text-destructive mt-1">
-                    {form.formState.errors.slug.message}
-                  </p>
-                )}
-              </div>
-            </div>
+            {/* Slug - Core field, always visible */}
+            <FieldRow label={slugField.label}>
+              {renderBuiltInField(slugField, form)}
+              {form.formState.errors.slug && (
+                <p className="text-xs text-destructive mt-1">
+                  {form.formState.errors.slug.message as string}
+                </p>
+              )}
+            </FieldRow>
 
-            {/* Built-in Fields */}
-            {isAuthorVisible && (
-              <div className="flex items-center gap-4">
-                <label className="text-sm font-medium text-muted-foreground min-w-[80px]">
-                  Author
-                </label>
-                <div className="flex-1 max-w-md">
-                  <Input
-                    {...form.register("author")}
-                    placeholder="Author name"
-                    className="text-sm"
-                  />
-                </div>
-              </div>
-            )}
+            {/* Visible built-in metadata fields */}
+            {visibleMetadataFields.map((field) => (
+              <FieldRow key={field.slug} label={field.label}>
+                {renderBuiltInField(field, form)}
+              </FieldRow>
+            ))}
 
-            {isDateVisible && (
-              <div className="flex items-center gap-4">
-                <label className="text-sm font-medium text-muted-foreground min-w-[80px]">
-                  Date
-                </label>
-                <div className="flex-1 max-w-xs">
-                  <Input
-                    {...form.register("date")}
-                    type="date"
-                    className="text-sm"
-                  />
-                </div>
-              </div>
-            )}
-
-            {isCoverVisible && (
-              <div className="flex items-start gap-4">
-                <label className="text-sm font-medium text-muted-foreground min-w-[80px] pt-2">
-                  Cover
-                </label>
-                <div className="flex-1 max-w-md space-y-2">
-                  <Input
-                    {...form.register("cover")}
-                    placeholder="https://example.com/image.jpg"
-                    className="text-sm"
-                  />
-                  {form.watch("cover") && (
-                    <img
-                      src={form.watch("cover")}
-                      alt="Cover"
-                      className="max-w-xs rounded-lg border"
-                    />
-                  )}
-                </div>
-              </div>
-            )}
-
-            {isTagsVisible && (
-              <div className="flex items-start gap-4">
-                <label className="text-sm font-medium text-muted-foreground min-w-[80px] pt-2">
-                  Tags
-                </label>
-                <div className="flex-1 max-w-md">
-                  <Input
-                    placeholder="tag1, tag2, tag3"
-                    onChange={(e) => {
-                      const tags = e.target.value
-                        .split(",")
-                        .map((t) => t.trim())
-                        .filter(Boolean);
-                      form.setValue("tags", tags);
-                    }}
-                    className="text-sm"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Separate with commas
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Custom Fields - render inline like built-in fields */}
+            {/* Custom non-richtext fields */}
             {nonRichTextFields.map((field) => (
-              <div key={field.slug} className="flex items-start gap-4">
-                <label className="text-sm font-medium text-muted-foreground min-w-[80px] pt-2">
-                  {field.label}
-                  {field.required && <span className="text-destructive ml-1">*</span>}
-                </label>
-                <div className="flex-1 max-w-md">
-                  <FieldInput
-                    field={field}
-                    value={form.watch(`item_data.${field.slug}` as any)}
-                    onChange={(value) =>
-                      form.setValue(`item_data.${field.slug}` as any, value)
-                    }
-                    error={
-                      form.formState.errors.item_data?.[field.slug]?.message
-                    }
-                  />
-                </div>
-              </div>
+              <FieldRow
+                key={field.slug}
+                label={field.label}
+                required={field.required}
+              >
+                <FieldInput
+                  field={field}
+                  value={form.watch(`item_data.${field.slug}`)}
+                  onChange={(value) =>
+                    form.setValue(`item_data.${field.slug}`, value)
+                  }
+                  error={form.formState.errors.item_data?.[field.slug]?.message}
+                />
+              </FieldRow>
             ))}
 
             {/* Hidden Properties Toggle */}
-            {(!isAuthorVisible || !isDateVisible || !isCoverVisible || !isTagsVisible) && (
+            {hiddenMetadataFields.length > 0 && (
               <div className="flex items-center gap-4">
                 <div className="min-w-[80px]" />
                 <button
@@ -282,86 +227,13 @@ export function ItemEditor({
               </div>
             )}
 
-            {/* Hidden Built-in Fields */}
-            {showAllProperties && (
-              <>
-                {!isAuthorVisible && (
-                  <div className="flex items-center gap-4 opacity-60 hover:opacity-100 transition-opacity">
-                    <label className="text-sm font-medium text-muted-foreground min-w-[80px]">
-                      Author
-                    </label>
-                    <div className="flex-1 max-w-md">
-                      <Input
-                        {...form.register("author")}
-                        placeholder="Author name"
-                        className="text-sm"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {!isDateVisible && (
-                  <div className="flex items-center gap-4 opacity-60 hover:opacity-100 transition-opacity">
-                    <label className="text-sm font-medium text-muted-foreground min-w-[80px]">
-                      Date
-                    </label>
-                    <div className="flex-1 max-w-xs">
-                      <Input
-                        {...form.register("date")}
-                        type="date"
-                        className="text-sm"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {!isCoverVisible && (
-                  <div className="flex items-start gap-4 opacity-60 hover:opacity-100 transition-opacity">
-                    <label className="text-sm font-medium text-muted-foreground min-w-[80px] pt-2">
-                      Cover
-                    </label>
-                    <div className="flex-1 max-w-md space-y-2">
-                      <Input
-                        {...form.register("cover")}
-                        placeholder="https://example.com/image.jpg"
-                        className="text-sm"
-                      />
-                      {form.watch("cover") && (
-                        <img
-                          src={form.watch("cover")}
-                          alt="Cover"
-                          className="max-w-xs rounded-lg border"
-                        />
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {!isTagsVisible && (
-                  <div className="flex items-start gap-4 opacity-60 hover:opacity-100 transition-opacity">
-                    <label className="text-sm font-medium text-muted-foreground min-w-[80px] pt-2">
-                      Tags
-                    </label>
-                    <div className="flex-1 max-w-md">
-                      <Input
-                        placeholder="tag1, tag2, tag3"
-                        onChange={(e) => {
-                          const tags = e.target.value
-                            .split(",")
-                            .map((t) => t.trim())
-                            .filter(Boolean);
-                          form.setValue("tags", tags);
-                        }}
-                        className="text-sm"
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Separate with commas
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
+            {/* Hidden built-in metadata fields */}
+            {showAllProperties &&
+              hiddenMetadataFields.map((field) => (
+                <FieldRow key={field.slug} label={field.label} hidden>
+                  {renderBuiltInField(field, form)}
+                </FieldRow>
+              ))}
           </div>
 
           {/* ALL RICH TEXT FIELDS SECTION */}
@@ -386,9 +258,9 @@ export function ItemEditor({
             <div key={field.slug} className="pt-2">
               <FieldInput
                 field={field}
-                value={form.watch(`item_data.${field.slug}` as any)}
+                value={form.watch(`item_data.${field.slug}`)}
                 onChange={(value) =>
-                  form.setValue(`item_data.${field.slug}` as any, value)
+                  form.setValue(`item_data.${field.slug}`, value)
                 }
                 error={form.formState.errors.item_data?.[field.slug]?.message}
               />

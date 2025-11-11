@@ -51,22 +51,31 @@ export const itemSchema = z.object({
   title: z.string().min(1, "Title is required"),
   content: z.string().optional(),
   author: z.string().optional(),
-  date: z.string().optional().transform((val) => val || undefined),
+  date: z
+    .string()
+    .optional()
+    .transform((val) => val || undefined),
   tags: z.array(z.string()).default([]),
-  cover: z.string().optional().transform((val) => val || undefined),
+  cover: z
+    .string()
+    .optional()
+    .transform((val) => val || undefined),
   published: z.boolean().default(false),
-  item_data: z.record(z.string(), z.unknown()).default({}).transform((data) => {
-    // Convert empty strings to undefined for cleaner data
-    const cleaned: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(data)) {
-      if (value === "") {
-        cleaned[key] = undefined;
-      } else {
-        cleaned[key] = value;
+  item_data: z
+    .record(z.string(), z.unknown())
+    .default({})
+    .transform((data) => {
+      // Convert empty strings to undefined for cleaner data
+      const cleaned: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(data)) {
+        if (value === "") {
+          cleaned[key] = undefined;
+        } else {
+          cleaned[key] = value;
+        }
       }
-    }
-    return cleaned;
-  }),
+      return cleaned;
+    }),
 });
 
 export type ItemFormData = z.infer<typeof itemSchema>;

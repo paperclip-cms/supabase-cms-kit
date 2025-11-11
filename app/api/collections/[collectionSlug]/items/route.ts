@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   request: NextRequest,
-  context: { params: Promise<{ collectionSlug: string }> }
+  context: { params: Promise<{ collectionSlug: string }> },
 ) {
   try {
     const { collectionSlug } = await context.params;
@@ -30,7 +30,7 @@ export async function POST(
     if (collectionError || !collection) {
       return NextResponse.json(
         { error: "Collection not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -52,6 +52,7 @@ export async function POST(
         tags: validatedData.tags,
         cover: validatedData.cover || null,
         published_at: validatedData.published ? new Date().toISOString() : null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         item_data: validatedData.item_data as any, // Cast to any for JSONB compatibility
       })
       .select()
@@ -61,7 +62,7 @@ export async function POST(
       console.error("Error creating item:", itemError);
       return NextResponse.json(
         { error: itemError.message || "Failed to create item" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -72,13 +73,13 @@ export async function POST(
     if (error instanceof Error && error.name === "ZodError") {
       return NextResponse.json(
         { error: "Validation error", details: error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

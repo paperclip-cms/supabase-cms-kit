@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import MainLayout from "@/components/layout/main-layout";
 import Header from "@/components/layout/header";
 import "./globals.css";
+import { NavigationGuardProvider } from "next-navigation-guard";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -43,7 +44,9 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark">
           <AuthProvider>
             <OnboardingProvider>
-              <MainLayout header={<Header />}>{children}</MainLayout>
+              <NavigationGuardProvider>
+                <MainLayout header={<Header />}>{children}</MainLayout>
+              </NavigationGuardProvider>
               <Toaster />
             </OnboardingProvider>
           </AuthProvider>
