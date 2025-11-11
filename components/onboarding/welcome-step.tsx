@@ -83,7 +83,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
       </div>
 
       {/* Hosted CTA */}
-      <a
+      {/* <a
         href="https://paperclip.dev?source=oss-onboarding"
         target="_blank"
         rel="noopener noreferrer"
@@ -102,7 +102,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
           </div>
           <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-purple flex-shrink-0 mt-0.5 transition-colors" />
         </div>
-      </a>
+      </a> */}
 
       {/* Telemetry Opt-in */}
       <div className="border-t pt-6">

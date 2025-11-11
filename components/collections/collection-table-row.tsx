@@ -30,21 +30,21 @@ export function CollectionTableRow({ item }: CollectionTableRowProps) {
   };
 
   const handleRowClick = () => {
-    router.push(`${pathname}/${item.id}`);
+    router.push(`${pathname}/${item.slug}`);
   };
 
   const handleEdit = () => {
-    router.push(`${pathname}/${item.id}`);
+    router.push(`${pathname}/${item.slug}`);
   };
 
   const handleDuplicate = () => {
     // TODO: Implement duplicate logic
-    console.log("Duplicate:", item.id);
+    console.log("Duplicate:", item.slug);
   };
 
   const handleDelete = () => {
     // TODO: Implement delete logic
-    console.log("Delete:", item.id);
+    console.log("Delete:", item.slug);
   };
 
   return (

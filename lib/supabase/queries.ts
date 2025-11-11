@@ -26,3 +26,43 @@ export function getCollectionsQuery(supabase: SupabaseClient<Database>) {
 export type CollectionsWithItemMetadata = QueryData<
   ReturnType<typeof getCollectionsQuery>
 >;
+
+export function getItemWithCollectionQuery(
+  supabase: SupabaseClient<Database>,
+  collectionSlug: string,
+  itemSlug: string,
+) {
+  console.log('getItemWithCollectionQuery', collectionSlug, itemSlug);
+  return supabase
+    .from("items")
+    .select(
+      `
+      id,
+      slug,
+      title,
+      content,
+      author,
+      date,
+      tags,
+      cover,
+      published_at,
+      created_at,
+      updated_at,
+      item_data,
+      collection:collections (
+        id,
+        slug,
+        label,
+        icon,
+        config
+      )
+    `,
+    )
+    .eq("slug", itemSlug)
+    .eq("collections.slug", collectionSlug)
+    .single();
+}
+
+export type ItemWithCollection = QueryData<
+  ReturnType<typeof getItemWithCollectionQuery>
+>;

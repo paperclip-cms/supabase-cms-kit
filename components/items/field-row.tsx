@@ -24,11 +24,11 @@ export function FieldRow({
         className,
       )}
     >
-      <label className="text-sm font-medium text-muted-foreground min-w-[80px] pt-2">
+      <label className="text-sm font-medium text-muted-foreground w-[120px] shrink-0 pt-2">
         {label}
         {required && <span className="text-destructive ml-1">*</span>}
       </label>
-      <div className="flex-1 max-w-md">{children}</div>
+      <div className="flex-1">{children}</div>
     </div>
   );
 }

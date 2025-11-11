@@ -4,6 +4,7 @@ import {
   OPTION_UI_CONFIG,
   OptionValueType,
   type OptionKey,
+  BUILT_IN_FIELDS,
 } from "./field-options";
 
 /**
@@ -235,22 +236,8 @@ export const collectionConfigSchema = z
       }
     }
 
-    // Validate that at least one field is visible if builtInFields are configured
-    if (config.builtInFields) {
-      const visibleFields = Object.values(config.builtInFields).filter(
-        (settings) => settings.visible,
-      );
-      if (
-        visibleFields.length === 0 &&
-        (!config.customFields || config.customFields.length === 0)
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["builtInFields"],
-          message: "At least one field must be visible",
-        });
-      }
-    }
+    // Note: We don't need to validate that at least one field is visible
+    // because core fields (title, slug) are always visible and cannot be hidden
   });
 
 /**

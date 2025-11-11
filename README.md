@@ -1,8 +1,40 @@
-# ⚠️ WIP!!!
+# ⚠️ WIP!!! todo list:
+_...starting from not-zero lol_
+- [x] Build item create/edit form
+- [x] Build item view page
+- [ ] Add real media uploads (reference [adboio/adboio](https://github.com/adboio/adboio))
+  - [ ] Allow HEIC uploads (auto-convert client-side)
+  - [ ] Add new migration for storage bucket(s)
+  - [ ] Image/mutli-image type uploads
+  - [ ] Generic file type uploads
+  - [ ] Rich text inline image/video uploads
+  - [ ] Fix edit form to pull image list on load - shows empty right now if you hit the URL directly, but works if you click the edit button
+- [ ] Fix max-width on item viewer and create/edit form (it's more constrained than the other pages)
+- [ ] Fix breadcrums, they are inconsistent across the app
+- [ ] Collection edit validation (what happens to exisitng items if you remove a field, or rename a slug, for example)
+  - [ ] Auto-update collection data if a field slug changes, OR disallow field slug editing, OR just give a big fat warning lol
+- [ ] New item/collection validation pre-DB hit, e.g. dupe slugs etc
+- [ ] Add API layer for non-direct-Supabase integrations
+  - [ ] Build API layer
+  - [ ] Add separate API-only auth layer (maybe use some base like `/api/public/{route}`)
+- [ ] Implement content / data caching (blob storage @ edge ?)
+- [ ] Create JS SDK
+  - [ ] Supabase-direct connection, e.g. `paperclip.init({ url: '', anonKey: '' })`
+  - [ ] API connection, e.g. `paperclip.init({ apiUrl: '', apiKey: '' })`
+- [ ] Create TS type generator for collections
+- [ ] Implement on my [personal site](https://www.adbo.io) ([repo](https://github.com/adboio/adboio)) as a nextjs example
+- [ ] Build Framer plugin
+  - [ ] Implement in [vibeclinic](https://www.vibeclinic.io) as example
+- [ ] Build Webflow plugin
+  - [ ] Implement in [forkfile](https://www.getforkfile.com) as example
+- [ ] Add ability to invite new users
+- [ ] Add auto-save to item creation
+
+---
 
 # 📎 Paperclip OSS (Supabase CMS Kit)
 
-Paperclip OSS (Supabase CMS kit by [paperclip](https://paperclip.dev)) is an open-source API + UI layer for Supabase.
+Paperclip OSS (Supabase CMS kit) is an open-source API + UI layer for Supabase.
 
 ## Getting Started
 

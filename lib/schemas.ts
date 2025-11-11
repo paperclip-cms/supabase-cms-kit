@@ -47,6 +47,7 @@ export type CollectionFormData = z.infer<typeof collectionSchema>;
  * Item validation
  */
 export const itemSchema = z.object({
+  id: z.string().uuid().optional(), // Include ID for updates
   slug: slugSchema,
   title: z.string().min(1, "Title is required"),
   content: z.string().optional(),

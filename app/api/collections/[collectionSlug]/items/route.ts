@@ -38,37 +38,40 @@ export async function POST(
     const body = await request.json();
     const validatedData = itemSchema.parse(body);
 
-    // Create item
+    const itemData = {
+      ...(validatedData.id ? { id: validatedData.id } : {}), // Include ID if updating
+      collection_id: collection.id,
+      slug: validatedData.slug,
+      title: validatedData.title,
+      content: validatedData.content,
+      user_id: user.id,
+      author: validatedData.author || null,
+      date: validatedData.date || null,
+      tags: validatedData.tags,
+      cover: validatedData.cover || null,
+      published_at: validatedData.published ? new Date().toISOString() : null,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      item_data: validatedData.item_data as any,
+    };
+
+    // Upsert: insert if new, update if ID is provided
     const { data: item, error: itemError } = await supabase
       .from("items")
-      .insert({
-        collection_id: collection.id,
-        slug: validatedData.slug,
-        title: validatedData.title,
-        content: validatedData.content,
-        user_id: user.id, // Current user UUID
-        author: validatedData.author || null,
-        date: validatedData.date || null,
-        tags: validatedData.tags,
-        cover: validatedData.cover || null,
-        published_at: validatedData.published ? new Date().toISOString() : null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        item_data: validatedData.item_data as any, // Cast to any for JSONB compatibility
-      })
+      .upsert(itemData)
       .select()
       .single();
 
     if (itemError) {
-      console.error("Error creating item:", itemError);
+      console.error("Error saving item:", itemError);
       return NextResponse.json(
-        { error: itemError.message || "Failed to create item" },
+        { error: itemError.message || "Failed to save item" },
         { status: 400 },
       );
     }
 
     return NextResponse.json(item, { status: 201 });
   } catch (error) {
-    console.error("Error in POST /api/collections/[slug]/items:", error);
+    console.error("Error in POST items API:", error);
 
     if (error instanceof Error && error.name === "ZodError") {
       return NextResponse.json(

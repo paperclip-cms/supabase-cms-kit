@@ -55,7 +55,10 @@ export function CollectionEditClient({
     },
   });
 
-  useNavigationGuard({ enabled: form.formState.isDirty });
+  // Destructure formState properties to ensure proper subscription
+  const { isDirty, isValid } = form.formState;
+
+  useNavigationGuard({ enabled: isDirty });
 
   const handleCopySlug = async () => {
     await navigator.clipboard.writeText(collection.slug);
@@ -72,12 +75,14 @@ export function CollectionEditClient({
         customFields: data.customFields as FieldConfig[],
       });
 
+      console.log(configResult)
+
       if (!configResult.success) {
         toast.error("Failed to update collection configuration");
         return;
       }
 
-      if (form.formState.dirtyFields.label || form.formState.dirtyFields.icon) {
+      if (isDirty && (form.formState.dirtyFields.label || form.formState.dirtyFields.icon)) {
         const metadataResult = await updateCollectionMetadata(collection.slug, {
           label: data.label,
           icon: data.icon,
@@ -191,39 +196,27 @@ export function CollectionEditClient({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div>
-                          <Button
-                            type="submit"
-                            disabled={
-                              !form.formState.isDirty ||
-                              !form.formState.isValid ||
-                              isSaving
-                            }
-                            variant="secondary"
-                          >
-                            <SaveIcon />
-                            <span className="hidden md:inline">
-                              {isSaving ? "Saving..." : "Save Changes"}
-                            </span>
-                          </Button>
-                        </div>
-                      </TooltipTrigger>
-                      {!form.formState.isDirty && (
-                        <TooltipContent>
-                          <p>No changes to save</p>
-                        </TooltipContent>
-                      )}
-                      {form.formState.isDirty && !form.formState.isValid && (
-                        <TooltipContent>
-                          <p>Fix validation errors before saving</p>
-                        </TooltipContent>
-                      )}
-                    </Tooltip>
-                  </TooltipProvider>
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <Button
+                    type="submit"
+                    disabled={!isDirty || !isValid || isSaving}
+                    variant="secondary"
+                  >
+                    <SaveIcon />
+                    <span className="hidden md:inline">
+                      {isSaving ? "Saving..." : "Save Changes"}
+                    </span>
+                  </Button>
+                  {!isDirty && !isSaving && (
+                    <p className="text-xs text-muted-foreground">
+                      No changes to save
+                    </p>
+                  )}
+                  {isDirty && !isValid && (
+                    <p className="text-xs text-destructive">
+                      Fix validation errors before saving
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

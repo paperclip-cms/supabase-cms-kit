@@ -27,12 +27,25 @@ interface ItemEditorProps {
   collectionSlug: string;
   collectionLabel: string;
   collectionConfig: CollectionConfig;
+  initialData?: {
+    id: string;
+    slug: string;
+    title: string;
+    content: string | null;
+    author: string | null;
+    date: string | null;
+    tags: string[];
+    cover: string | null;
+    published_at: string | null;
+    item_data: unknown; // Json type from Supabase
+  };
 }
 
 export function ItemEditor({
   collectionSlug,
   collectionLabel,
   collectionConfig,
+  initialData,
 }: ItemEditorProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [showAllProperties, setShowAllProperties] = useState(false);
@@ -54,22 +67,43 @@ export function ItemEditor({
   const form = useForm<ItemFormInput>({
     resolver: zodResolver(itemSchema),
     mode: "onChange",
-    defaultValues: {
-      slug: "",
-      title: "",
-      content: "",
-      author: "",
-      date: "",
-      tags: [],
-      cover: "",
-      published: false,
-      item_data: initialItemData,
-    },
+    defaultValues: initialData
+      ? {
+          id: initialData.id,
+          slug: initialData.slug,
+          title: initialData.title,
+          content: initialData.content || "",
+          author: initialData.author || "",
+          date: initialData.date || "",
+          tags: initialData.tags || [],
+          cover: initialData.cover || "",
+          published: !!initialData.published_at,
+          item_data:
+            (initialData.item_data as Record<string, unknown>) ||
+            initialItemData,
+        }
+      : {
+          slug: "",
+          title: "",
+          content: "",
+          author: "",
+          date: "",
+          tags: [],
+          cover: "",
+          published: false,
+          item_data: initialItemData,
+        },
   });
 
+  // Destructure formState properties to ensure proper subscription
+  const { isDirty } = form.formState;
+
   useNavigationGuard({
-    enabled: form.formState.isDirty && !isSaving,
+    enabled: isDirty && !isSaving,
   });
+
+  const isEditMode = !!initialData?.id;
+  const isCurrentlyPublished = !!initialData?.published_at;
 
   const handleSave = form.handleSubmit(async (data) => {
     // Validate required custom fields
@@ -92,6 +126,7 @@ export function ItemEditor({
 
     setIsSaving(true);
     try {
+      // Use POST for both create and update - backend uses upsert
       const response = await fetch(`/api/collections/${collectionSlug}/items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -100,7 +135,7 @@ export function ItemEditor({
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || "Failed to create item");
+        throw new Error(error.message || "Failed to save item");
       }
 
       const result = await response.json();
@@ -146,16 +181,16 @@ export function ItemEditor({
     (f) => f.type !== FieldType.RichText,
   );
 
-  // Auto-generate slug from title (using useMemo like collection modal)
+  // Auto-generate slug from title (only in create mode)
   const watchTitle = form.watch("title");
   const autoSlug = useMemo(() => slugify(watchTitle), [watchTitle]);
 
   useEffect(() => {
-    // Always sync auto-generated slug unless user has manually edited it
-    if (autoSlug && !form.formState.dirtyFields.slug) {
+    // Only auto-generate slug in create mode
+    if (!isEditMode && autoSlug && !form.formState.dirtyFields.slug) {
       form.setValue("slug", autoSlug, { shouldValidate: false });
     }
-  }, [autoSlug, form]);
+  }, [autoSlug, form, isEditMode]);
 
   return (
     <FormProvider {...form}>
@@ -216,7 +251,7 @@ export function ItemEditor({
             {/* Hidden Properties Toggle */}
             {hiddenMetadataFields.length > 0 && (
               <div className="flex items-center gap-4">
-                <div className="min-w-[80px]" />
+                <div className="w-[120px] shrink-0" />
                 <button
                   type="button"
                   onClick={() => setShowAllProperties(!showAllProperties)}
@@ -278,17 +313,22 @@ export function ItemEditor({
           >
             Cancel
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {
-              form.setValue("published", false);
-              handleSave();
-            }}
-            disabled={isSaving}
-          >
-            Save Draft
-          </Button>
+
+          {/* Show "Save Draft" only if currently unpublished */}
+          {!isCurrentlyPublished && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                form.setValue("published", false);
+                handleSave();
+              }}
+              disabled={isSaving}
+            >
+              Save Draft
+            </Button>
+          )}
+
           <Button
             type="button"
             onClick={() => {
@@ -300,12 +340,12 @@ export function ItemEditor({
             {isSaving ? (
               <>
                 <Loader2Icon className="size-4 mr-2 animate-spin" />
-                Publishing...
+                Saving...
               </>
             ) : (
               <>
                 <SaveIcon className="size-4 mr-2" />
-                Publish
+                {isCurrentlyPublished ? "Save" : "Publish"}
               </>
             )}
           </Button>
