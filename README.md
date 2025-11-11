@@ -8,7 +8,7 @@ _...starting from not-zero lol_
   - [x] Allow HEIC uploads (auto-convert client-side)
   - [x] Add new migration for storage bucket(s)
   - [x] Image/mutli-image type uploads
-  - [ ] Generic file type uploads
+  - [x] Generic file type uploads
   - [ ] Rich text inline image/video uploads
   - [x] Fix edit form to pull image list on load - shows empty right now if you hit the URL directly, but works if you click the edit button
 - [ ] Fix max-width on item viewer and create/edit form (it's more constrained than the other pages)

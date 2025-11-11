@@ -24,10 +24,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No files provided" }, { status: 400 });
     }
 
-    // Validate file count
-    if (files.length > 10) {
+    // Allow reasonable batch uploads (no hard limit - let storage handle it)
+    if (files.length > 50) {
       return NextResponse.json(
-        { error: "Maximum 10 files allowed" },
+        { error: "Too many files in single request (max 50)" },
         { status: 400 },
       );
     }
@@ -36,35 +36,38 @@ export async function POST(request: NextRequest) {
     const errors = [];
 
     for (const file of files) {
-      // Validate file type (images only for now)
-      if (!file.type.startsWith("image/")) {
-        errors.push({ file: file.name, error: "Only image files allowed" });
-        continue;
-      }
+      try {
+        // Get file extension from original filename
+        const fileExt = file.name.split(".").pop()?.toLowerCase() || "bin";
 
-      // Generate unique file path - always use .jpg since client converts to JPEG
-      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+        // Generate unique file path with original extension
+        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-      // Upload to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from("collection-media")
-        .upload(fileName, file, {
-          contentType: "image/jpeg",
-          cacheControl: "3600",
-          upsert: false,
-        });
+        // Upload to Supabase Storage with actual content type
+        const { data, error } = await supabase.storage
+          .from("collection-media")
+          .upload(fileName, file, {
+            contentType: file.type || "application/octet-stream",
+            cacheControl: "3600",
+            upsert: false,
+          });
 
-      if (error) {
-        errors.push({ file: file.name, error: error.message });
-      } else {
-        // Build public URL directly (no additional API call needed for public buckets)
-        const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/collection-media/${data.path}`;
+        if (error) {
+          errors.push({ file: file.name, error: error.message });
+        } else {
+          // Build public URL directly (no additional API call needed for public buckets)
+          const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/collection-media/${data.path}`;
 
-        uploadedFiles.push({
-          name: file.name,
-          path: data.path,
-          url: publicUrl,
-        });
+          uploadedFiles.push({
+            name: file.name,
+            path: data.path,
+            url: publicUrl,
+          });
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Unknown error";
+        errors.push({ file: file.name, error: errorMessage });
       }
     }
 
