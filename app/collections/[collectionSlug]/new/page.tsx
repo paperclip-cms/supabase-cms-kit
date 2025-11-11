@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
+import { ItemEditor } from "@/components/items/item-editor";
+import { CollectionConfig } from "@/lib/types";
 
 export default async function NewItemPage({
   params,
@@ -12,7 +14,7 @@ export default async function NewItemPage({
   const supabase = await createClient();
   const { data: collection, error } = await supabase
     .from("collections")
-    .select("label")
+    .select("label, config")
     .eq("slug", collectionSlug)
     .single();
 
@@ -20,6 +22,8 @@ export default async function NewItemPage({
     console.error(error);
     return <div>Error loading collection</div>;
   }
+
+  const collectionConfig = collection.config as CollectionConfig;
 
   return (
     <div className="w-full flex justify-center p-8">
@@ -79,6 +83,13 @@ export default async function NewItemPage({
             </div>
           </div>
         </div>
+
+        {/* Item Editor */}
+        <ItemEditor
+          collectionSlug={collectionSlug}
+          collectionLabel={collection.label}
+          collectionConfig={collectionConfig}
+        />
       </div>
     </div>
   );
