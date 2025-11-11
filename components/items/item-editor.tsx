@@ -49,6 +49,24 @@ export function ItemEditor({
   });
 
   const handleSave = form.handleSubmit(async (data) => {
+    // Validate required custom fields
+    const errors: string[] = [];
+    if (data.item_data) {
+      customFields.forEach((field) => {
+        if (field.required) {
+          const value = data.item_data?.[field.slug];
+          if (value === undefined || value === null || value === "") {
+            errors.push(`${field.label} is required`);
+          }
+        }
+      });
+    }
+
+    if (errors.length > 0) {
+      alert(`Please fill in required fields:\n${errors.join("\n")}`);
+      return;
+    }
+
     setIsSaving(true);
     try {
       const response = await fetch(`/api/collections/${collectionSlug}/items`, {
