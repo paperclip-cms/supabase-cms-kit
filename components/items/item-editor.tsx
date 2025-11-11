@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RichTextEditor } from "./rich-text-editor";
 import { FieldInput } from "./field-inputs";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2Icon, SaveIcon } from "lucide-react";
 import { BUILT_IN_FIELDS } from "@/lib/field-options";
+import { slugify } from "@/lib/utils";
 
 interface ItemEditorProps {
   collectionSlug: string;
@@ -97,24 +98,20 @@ export function ItemEditor({
     (f) => f.type !== FieldType.RichText
   );
 
-  // Auto-generate slug from title
+  // Auto-generate slug from title (using useMemo like collection modal)
   const watchTitle = form.watch("title");
-  const watchSlug = form.watch("slug");
+  const autoSlug = useMemo(() => slugify(watchTitle), [watchTitle]);
 
   useEffect(() => {
-    // Only auto-generate if slug is empty or hasn't been manually edited
-    if (watchTitle && !watchSlug) {
-      const slug = watchTitle
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "");
-      form.setValue("slug", slug, { shouldValidate: false });
+    // Always sync auto-generated slug unless user has manually edited it
+    if (autoSlug && !form.formState.dirtyFields.slug) {
+      form.setValue("slug", autoSlug, { shouldValidate: false });
     }
-  }, [watchTitle, watchSlug, form]);
+  }, [autoSlug, form]);
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={handleSave} className="w-full max-w-4xl mx-auto pb-24">
+      <form onSubmit={handleSave} className="w-full max-w-4xl mx-auto">
         {/* Notion-style layout */}
         <div className="space-y-8">
           {/* Title Section - Always at the top, Notion-style */}
@@ -231,6 +228,28 @@ export function ItemEditor({
               </div>
             )}
 
+            {/* Custom Fields - render inline like built-in fields */}
+            {nonRichTextFields.map((field) => (
+              <div key={field.slug} className="flex items-start gap-4">
+                <label className="text-sm font-medium text-muted-foreground min-w-[80px] pt-2">
+                  {field.label}
+                  {field.required && <span className="text-destructive ml-1">*</span>}
+                </label>
+                <div className="flex-1 max-w-md">
+                  <FieldInput
+                    field={field}
+                    value={form.watch(`item_data.${field.slug}` as any)}
+                    onChange={(value) =>
+                      form.setValue(`item_data.${field.slug}` as any, value)
+                    }
+                    error={
+                      form.formState.errors.item_data?.[field.slug]?.message
+                    }
+                  />
+                </div>
+              </div>
+            ))}
+
             {/* Hidden Properties Toggle */}
             {(!isAuthorVisible || !isDateVisible || !isCoverVisible || !isTagsVisible) && (
               <div className="flex items-center gap-4">
@@ -240,7 +259,7 @@ export function ItemEditor({
                   onClick={() => setShowAllProperties(!showAllProperties)}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
                 >
-                  {showAllProperties ? "− Hide" : "+ Add"} properties
+                  {showAllProperties ? "− Hide" : "+ Show"} hidden properties
                 </button>
               </div>
             )}
@@ -325,27 +344,9 @@ export function ItemEditor({
                 )}
               </>
             )}
-
-            {/* Non-RichText Custom Fields */}
-            {nonRichTextFields.map((field) => (
-              <div key={field.slug} className="flex items-start gap-4">
-                <div className="min-w-[80px]" />
-                <div className="flex-1">
-                  <FieldInput
-                    field={field}
-                    value={form.watch(`item_data.${field.slug}` as any)}
-                    onChange={(value) =>
-                      form.setValue(`item_data.${field.slug}` as any, value)
-                    }
-                    error={
-                      form.formState.errors.item_data?.[field.slug]?.message
-                    }
-                  />
-                </div>
-              </div>
-            ))}
           </div>
 
+          {/* ALL RICH TEXT FIELDS SECTION */}
           {/* Content Section - Notion-style, main content area */}
           {isContentVisible && (
             <div className="pt-4">
@@ -377,51 +378,47 @@ export function ItemEditor({
           ))}
         </div>
 
-        {/* Floating Actions Bar */}
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-background/80 backdrop-blur-sm">
-          <div className="w-full max-w-4xl mx-auto px-8 py-4 flex items-center justify-between">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => router.back()}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  form.setValue("published", false);
-                  handleSave();
-                }}
-                disabled={isSaving}
-              >
-                Save Draft
-              </Button>
-              <Button
-                type="button"
-                onClick={() => {
-                  form.setValue("published", true);
-                  handleSave();
-                }}
-                disabled={isSaving}
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2Icon className="size-4 mr-2 animate-spin" />
-                    Publishing...
-                  </>
-                ) : (
-                  <>
-                    <SaveIcon className="size-4 mr-2" />
-                    Publish
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-2 pt-8 mt-8 border-t">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => router.back()}
+            disabled={isSaving}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              form.setValue("published", false);
+              handleSave();
+            }}
+            disabled={isSaving}
+          >
+            Save Draft
+          </Button>
+          <Button
+            type="button"
+            onClick={() => {
+              form.setValue("published", true);
+              handleSave();
+            }}
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <>
+                <Loader2Icon className="size-4 mr-2 animate-spin" />
+                Publishing...
+              </>
+            ) : (
+              <>
+                <SaveIcon className="size-4 mr-2" />
+                Publish
+              </>
+            )}
+          </Button>
         </div>
       </form>
     </FormProvider>
