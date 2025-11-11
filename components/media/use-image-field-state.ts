@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { UploadedImage } from "./image-upload";
 
 /**
@@ -18,9 +18,10 @@ export function useImageFieldState(
   imagesRef.current = images;
 
   // Sync local state with form value when it changes externally
-  const prevValueRef = useRef(value);
-  if (prevValueRef.current !== value && images.every((img) => !img.isUploading)) {
-    prevValueRef.current = value;
+  useEffect(() => {
+    // Don't sync if uploads are in progress
+    if (images.some((img) => img.isUploading)) return;
+
     const newImages: UploadedImage[] = Array.isArray(value)
       ? value.map((url, index) => ({
           url,
@@ -30,10 +31,11 @@ export function useImageFieldState(
       : typeof value === "string" && value
         ? [{ url: value, path: value, name: "image" }]
         : [];
+
     if (JSON.stringify(newImages) !== JSON.stringify(images)) {
       setImages(newImages);
     }
-  }
+  }, [value, images]);
 
   const handleImagesChange = (
     newImages: UploadedImage[] | ((prev: UploadedImage[]) => UploadedImage[]),
