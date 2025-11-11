@@ -42,3 +42,20 @@ export const collectionSchema = z.object({
 });
 
 export type CollectionFormData = z.infer<typeof collectionSchema>;
+
+/**
+ * Item validation
+ */
+export const itemSchema = z.object({
+  slug: slugSchema,
+  title: z.string().min(1, "Title is required"),
+  content: z.string().optional(),
+  author: z.string().optional(),
+  date: z.string().optional(),
+  tags: z.array(z.string()).default([]),
+  cover: z.string().optional(),
+  published: z.boolean().default(false),
+  item_data: z.record(z.string(), z.unknown()).default({}),
+});
+
+export type ItemFormData = z.infer<typeof itemSchema>;
