@@ -1,7 +1,6 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { FieldConfig } from "@/lib/types";
 
 interface NumberFieldInputProps {
@@ -22,14 +21,7 @@ export function NumberFieldInput({
     "";
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor={field.slug}>
-        {field.label}
-        {field.required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      {field.description && (
-        <p className="text-sm text-muted-foreground">{field.description}</p>
-      )}
+    <div className="space-y-1">
       <Input
         id={field.slug}
         type="number"
@@ -39,9 +31,9 @@ export function NumberFieldInput({
           onChange(val === "" ? null : parseFloat(val));
         }}
         placeholder={placeholder}
-        className={error ? "border-destructive" : ""}
+        className={`text-sm ${error ? "border-destructive" : ""}`}
       />
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }

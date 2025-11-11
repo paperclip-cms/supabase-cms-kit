@@ -47,10 +47,10 @@ export async function POST(
         title: validatedData.title,
         content: validatedData.content,
         user_id: user.id, // Current user UUID
-        author: validatedData.author, // Author name (optional text field)
-        date: validatedData.date,
+        author: validatedData.author || null,
+        date: validatedData.date || null,
         tags: validatedData.tags,
-        cover: validatedData.cover,
+        cover: validatedData.cover || null,
         published_at: validatedData.published ? new Date().toISOString() : null,
         item_data: validatedData.item_data as any, // Cast to any for JSONB compatibility
       })

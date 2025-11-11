@@ -1,7 +1,6 @@
 "use client";
 
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { FieldConfig } from "@/lib/types";
 import { useState } from "react";
 
@@ -39,14 +38,7 @@ export function JsonFieldInput({
   };
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor={field.slug}>
-        {field.label}
-        {field.required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      {field.description && (
-        <p className="text-sm text-muted-foreground">{field.description}</p>
-      )}
+    <div className="space-y-1">
       <Textarea
         id={field.slug}
         value={textValue}
@@ -56,7 +48,7 @@ export function JsonFieldInput({
         className={`font-mono text-sm ${error || jsonError ? "border-destructive" : ""}`}
       />
       {(error || jsonError) && (
-        <p className="text-sm text-destructive">{error || jsonError}</p>
+        <p className="text-xs text-destructive">{error || jsonError}</p>
       )}
     </div>
   );

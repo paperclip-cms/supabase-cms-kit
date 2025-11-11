@@ -30,14 +30,7 @@ export function MultiSelectFieldInput({
   };
 
   return (
-    <div className="space-y-2">
-      <Label>
-        {field.label}
-        {field.required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      {field.description && (
-        <p className="text-sm text-muted-foreground">{field.description}</p>
-      )}
+    <div className="space-y-1">
       <div className="space-y-2 border rounded-lg p-3">
         {choices.map((choice) => (
           <div key={choice.value} className="flex items-center gap-2">
@@ -48,14 +41,14 @@ export function MultiSelectFieldInput({
             />
             <Label
               htmlFor={`${field.slug}-${choice.value}`}
-              className="cursor-pointer font-normal"
+              className="cursor-pointer font-normal text-sm"
             >
               {choice.label}
             </Label>
           </div>
         ))}
       </div>
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }

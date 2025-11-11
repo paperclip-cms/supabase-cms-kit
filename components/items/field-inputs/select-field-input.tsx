@@ -1,6 +1,5 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -31,16 +30,9 @@ export function SelectFieldInput({
     ?.value as Array<{ label: string; value: string }>) || [];
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor={field.slug}>
-        {field.label}
-        {field.required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      {field.description && (
-        <p className="text-sm text-muted-foreground">{field.description}</p>
-      )}
+    <div className="space-y-1">
       <Select value={value || ""} onValueChange={onChange}>
-        <SelectTrigger className={error ? "border-destructive" : ""}>
+        <SelectTrigger className={`text-sm ${error ? "border-destructive" : ""}`}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
@@ -51,7 +43,7 @@ export function SelectFieldInput({
           ))}
         </SelectContent>
       </Select>
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }
