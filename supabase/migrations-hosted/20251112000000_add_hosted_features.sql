@@ -1,8 +1,11 @@
 -- =====================================================================
--- HOSTED FEATURES MIGRATION
+-- ⚠️  HOSTED-ONLY MIGRATION - DO NOT RUN IN OSS MODE ⚠️
 -- =====================================================================
--- This migration adds support for project-based multi-tenancy (hosted mode)
--- while maintaining backward compatibility with user-owned collections (OSS mode)
+-- This migration is ONLY for the hosted (paid) version of Paperclip CMS.
+-- OSS/self-hosted users should NOT run this migration.
+--
+-- This adds support for project-based multi-tenancy (hosted mode) while
+-- maintaining backward compatibility with user-owned collections (OSS mode).
 --
 -- OSS Mode: Collections are owned by users directly (user_id NOT NULL, project_id NULL)
 -- Hosted Mode: Collections are owned by projects (project_id NOT NULL, user_id NULL)

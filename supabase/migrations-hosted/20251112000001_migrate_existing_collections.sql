@@ -1,6 +1,11 @@
 -- =====================================================================
--- MIGRATE EXISTING COLLECTIONS TO USER-OWNED (OSS MODE)
+-- ⚠️  HOSTED-ONLY MIGRATION - DO NOT RUN IN OSS MODE ⚠️
 -- =====================================================================
+-- This migration is ONLY for the hosted (paid) version of Paperclip CMS.
+-- OSS/self-hosted users should NOT run this migration.
+--
+-- MIGRATE EXISTING COLLECTIONS TO USER-OWNED (OSS MODE)
+--
 -- This migration assigns existing collections (with NULL user_id/project_id)
 -- to the user who created the first item in that collection.
 --
