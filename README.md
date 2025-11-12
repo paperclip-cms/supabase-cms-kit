@@ -14,6 +14,7 @@ _...starting from not-zero lol_
 - [ ] Add video support
   - [ ] New `Video` field type
   - [ ] Upload videos inline in rich text
+  - [ ] This might make caching / streaming more important - and maybe Supabase cold storage isn't the best option for retrieval here
 - [ ] Make the editor better...
   - [ ] Most styles don't work (h1/h2/ul/ol/quote)
   - [ ] Images should be a little easier to drag/drop (maybe just a cursor update)
