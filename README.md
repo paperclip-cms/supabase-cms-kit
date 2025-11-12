@@ -4,18 +4,21 @@ _...starting from not-zero lol_
 
 - [x] Build item create/edit form
 - [x] Build item view page
-- [ ] Add real media uploads (reference [adboio/adboio](https://github.com/adboio/adboio))
+- [x] Add real media uploads (reference [adboio/adboio](https://github.com/adboio/adboio))
   - [x] Allow HEIC uploads (auto-convert client-side)
   - [x] Add new migration for storage bucket(s)
   - [x] Image/mutli-image type uploads
   - [x] Generic file type uploads
   - [x] Rich text inline image/video uploads
   - [x] Fix edit form to pull image list on load - shows empty right now if you hit the URL directly, but works if you click the edit button
+- [ ] Add video support
+  - [ ] New `Video` field type
+  - [ ] Upload videos inline in rich text
 - [ ] Make the editor better...
   - [ ] Most styles don't work (h1/h2/ul/ol/quote)
   - [ ] Images should be a little easier to drag/drop (maybe just a cursor update)
   - [ ] Add "edit mode" that makes the editor full-screen
-- [ ] Add markdown mode....?
+- [ ] Markdown mode....?
   - [ ] Rich text markdown export?
   - [ ] Markdown editor (separate from rich text?)
 - [ ] Fix max-width on item viewer and create/edit form (it's more constrained than the other pages)
