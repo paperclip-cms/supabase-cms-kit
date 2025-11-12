@@ -89,6 +89,66 @@ const info = await storage.getStorageInfo(projectId)
 const canUpload = await storage.canUpload(projectId, fileSizeBytes)
 ```
 
+#### 5. Cache Provider (Opt-in for Both Modes)
+
+Caches published content for fast queries.
+
+**OSS**: Disabled by default, can opt-in to memory/filesystem/Redis
+**Hosted**: Redis/Upstash for distributed caching
+
+Unlike other providers, cache is **opt-in for both OSS and hosted**. OSS users can enable caching by setting environment variables.
+
+```typescript
+import { getCacheProvider } from '@/lib/providers'
+
+const cache = getCacheProvider()
+
+// Cache a published item
+await cache.set(`item:${slug}`, itemData, 3600) // 1 hour TTL
+
+// Retrieve from cache
+const cachedItem = await cache.get(`item:${slug}`)
+
+// Invalidate cache
+await cache.delete(`item:${slug}`)
+
+// Invalidate pattern (e.g., all blog posts)
+await cache.deletePattern('collection:blog:*')
+```
+
+**Cache Options:**
+
+| Provider | OSS | Hosted | Persistent | Distributed | External Deps |
+|----------|-----|--------|------------|-------------|---------------|
+| `disabled` | ✓ (default) | - | - | - | None |
+| `memory` | ✓ | ✓ | ❌ | ❌ | None |
+| `filesystem` | ✓ | - | ✓ | ❌ | None |
+| `redis` | ✓ | ✓ | ✓ | ✓ | ioredis |
+| `upstash` | ✓ | ✓ (recommended) | ✓ | ✓ | @upstash/redis |
+
+**Configuration:**
+
+```bash
+# Disabled (default)
+CACHE_PROVIDER=disabled
+
+# Memory cache (good for dev)
+CACHE_PROVIDER=memory
+
+# File system cache (good for single-instance)
+CACHE_PROVIDER=filesystem
+CACHE_FILESYSTEM_DIR=./.cache
+
+# Redis cache (good for production)
+CACHE_PROVIDER=redis
+REDIS_URL=redis://localhost:6379
+
+# Upstash (serverless-friendly)
+CACHE_PROVIDER=upstash
+UPSTASH_REDIS_URL=your-url
+UPSTASH_REDIS_TOKEN=your-token
+```
+
 ## Directory Structure
 
 ```
@@ -105,6 +165,11 @@ const canUpload = await storage.canUpload(projectId, fileSizeBytes)
 ├── storage/
 │   ├── types.ts              # StorageProvider interface
 │   └── noop.ts              # OSS: No limits
+├── cache/
+│   ├── types.ts              # CacheProvider interface
+│   ├── disabled.ts           # OSS default: No caching
+│   ├── memory.ts             # Opt-in: In-memory cache
+│   └── filesystem.ts         # Opt-in: File system cache
 ├── index.ts                  # Provider registry
 ├── features.ts               # Client-side feature flags
 └── README.md                 # This file
@@ -118,8 +183,10 @@ const canUpload = await storage.canUpload(projectId, fileSizeBytes)
 │   └── stripe-provider.ts    # Stripe integration
 ├── analytics/
 │   └── posthog-provider.ts   # PostHog integration
-└── storage/
-    └── storage-provider.ts   # Storage tracking & limits
+├── storage/
+│   └── storage-provider.ts   # Storage tracking & limits
+└── cache/
+    └── redis-provider.ts     # Redis/Upstash cache
 ```
 
 ## Database Schema
