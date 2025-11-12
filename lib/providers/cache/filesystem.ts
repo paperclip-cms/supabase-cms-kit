@@ -1,15 +1,15 @@
-import type { CacheProvider, CacheKey, CacheEntry } from './types'
+import type { CacheProvider, CacheKey } from './types'
 import { promises as fs } from 'fs'
 import path from 'path'
 
 /**
- * File System Cache Provider (OSS Opt-in)
+ * File System Cache Provider (OSS)
  *
- * Stores cache entries as JSON files on disk.
- * Persistent across restarts, no external dependencies.
- * Good for single-instance deployments with disk access.
+ * Stores cache as JSON files on disk.
+ * Persistent, no external dependencies.
+ * Good for single-instance OSS deployments.
  *
- * WARNING: Not suitable for serverless environments or multi-instance deployments.
+ * WARNING: Not suitable for serverless or multi-instance deployments.
  */
 export class FileSystemCacheProvider implements CacheProvider {
   private cacheDir: string
@@ -22,27 +22,14 @@ export class FileSystemCacheProvider implements CacheProvider {
     try {
       const filePath = this.getFilePath(key)
       const data = await fs.readFile(filePath, 'utf-8')
-      const entry: CacheEntry<T> = JSON.parse(data)
-
-      // Check if expired
-      if (entry.expiresAt && entry.expiresAt < Date.now()) {
-        await this.delete(key)
-        return null
-      }
-
-      return entry.value
+      return JSON.parse(data) as T
     } catch (err) {
       // File doesn't exist or read error
       return null
     }
   }
 
-  async set<T = any>(key: CacheKey, value: T, ttl?: number): Promise<void> {
-    const entry: CacheEntry<T> = {
-      value,
-      expiresAt: ttl ? Date.now() + ttl * 1000 : undefined,
-    }
-
+  async set<T = any>(key: CacheKey, value: T): Promise<void> {
     const filePath = this.getFilePath(key)
 
     // Ensure directory exists
@@ -50,7 +37,7 @@ export class FileSystemCacheProvider implements CacheProvider {
 
     // Write to temp file then rename (atomic operation)
     const tempPath = `${filePath}.tmp`
-    await fs.writeFile(tempPath, JSON.stringify(entry), 'utf-8')
+    await fs.writeFile(tempPath, JSON.stringify(value), 'utf-8')
     await fs.rename(tempPath, filePath)
   }
 

@@ -10,8 +10,8 @@ import { NoOpBillingProvider } from './billing/noop'
 import { NoOpAnalyticsProvider } from './analytics/noop'
 import { NoOpStorageProvider } from './storage/noop'
 import { DisabledCacheProvider } from './cache/disabled'
-import { MemoryCacheProvider } from './cache/memory'
 import { FileSystemCacheProvider } from './cache/filesystem'
+import { SupabaseStorageCacheProvider } from './cache/supabase-storage'
 
 // Global provider instances
 let contextProvider: ContextProvider | null = null
@@ -80,41 +80,62 @@ function initializeOSSProviders() {
 /**
  * Initialize cache provider based on configuration
  * Cache is opt-in for both OSS and hosted modes
+ *
+ * Object storage options store JSON blobs in cloud storage.
+ * App fetches from cache, falls back to DB - users never access storage directly.
  */
 function initializeCacheProvider() {
   const cacheType = process.env.CACHE_PROVIDER || 'disabled'
 
   switch (cacheType) {
-    case 'memory':
-      cacheProvider = new MemoryCacheProvider()
-      console.log('  - Cache: memory (in-process)')
-      break
-
     case 'filesystem':
       const cacheDir = process.env.CACHE_FILESYSTEM_DIR || './.cache'
       cacheProvider = new FileSystemCacheProvider(cacheDir)
       console.log(`  - Cache: filesystem (${cacheDir})`)
       break
 
-    case 'redis':
-    case 'upstash':
-      try {
-        const { RedisCacheProvider } = require('@/lib/hosted/cache/redis-provider')
-        const redisUrl = process.env.REDIS_URL || process.env.UPSTASH_REDIS_URL
-        const redisToken = process.env.UPSTASH_REDIS_TOKEN
+    case 'supabase-storage':
+      const bucketName = process.env.CACHE_STORAGE_BUCKET || 'cache'
+      cacheProvider = new SupabaseStorageCacheProvider(bucketName)
+      console.log(`  - Cache: Supabase Storage (bucket: ${bucketName})`)
+      break
 
-        if (!redisUrl) {
-          throw new Error('REDIS_URL or UPSTASH_REDIS_URL is required')
+    case 'r2':
+      try {
+        const { R2CacheProvider } = require('@/lib/hosted/cache/r2-provider')
+
+        const accountId = process.env.R2_ACCOUNT_ID
+        const accessKeyId = process.env.R2_ACCESS_KEY_ID
+        const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY
+        const bucketName = process.env.R2_BUCKET_NAME || 'cache'
+        const cdnUrl = process.env.R2_CDN_URL
+
+        if (!accountId || !accessKeyId || !secretAccessKey) {
+          throw new Error('R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, and R2_SECRET_ACCESS_KEY are required')
         }
 
-        cacheProvider = new RedisCacheProvider({
-          url: redisUrl,
-          token: redisToken,
-          defaultTtl: parseInt(process.env.CACHE_DEFAULT_TTL || '3600'),
+        cacheProvider = new R2CacheProvider({
+          accountId,
+          accessKeyId,
+          secretAccessKey,
+          bucketName,
+          cdnUrl,
         })
-        console.log(`  - Cache: ${cacheType}`)
+        console.log(`  - Cache: Cloudflare R2 (bucket: ${bucketName})`)
       } catch (err) {
-        console.error('Failed to initialize Redis cache:', err)
+        console.error('Failed to initialize R2 cache:', err)
+        console.log('  - Cache: disabled (fallback)')
+        cacheProvider = new DisabledCacheProvider()
+      }
+      break
+
+    case 'vercel-blob':
+      try {
+        const { VercelBlobCacheProvider } = require('@/lib/hosted/cache/vercel-blob-provider')
+        cacheProvider = new VercelBlobCacheProvider()
+        console.log('  - Cache: Vercel Blob')
+      } catch (err) {
+        console.error('Failed to initialize Vercel Blob cache:', err)
         console.log('  - Cache: disabled (fallback)')
         cacheProvider = new DisabledCacheProvider()
       }
