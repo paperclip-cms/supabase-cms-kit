@@ -5,7 +5,8 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
-import { useEffect } from "react";
+import FileHandler from "@tiptap/extension-file-handler";
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import {
   BoldIcon,
@@ -19,7 +20,10 @@ import {
   CodeIcon,
   UndoIcon,
   RedoIcon,
+  ImageIcon,
 } from "lucide-react";
+import { toast } from "sonner";
+import { convertImageToJpeg } from "@/lib/image-conversion";
 
 interface RichTextEditorProps {
   content: string;
@@ -35,6 +39,95 @@ export function RichTextEditor({
   placeholder = "Start writing...",
   className,
 }: RichTextEditorProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle image upload - convert HEIC, compress, upload to /api/upload
+  const uploadImage = async (file: File): Promise<string | null> => {
+    try {
+      // Convert and compress image using existing utility
+      const processedFile = await convertImageToJpeg(file, {
+        maxSizeMB: 5,
+        maxWidthOrHeight: 1920,
+        quality: 0.8,
+      });
+
+      // Upload to /api/upload
+      const formData = new FormData();
+      formData.append("files", processedFile);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+
+      if (data.uploaded && data.uploaded.length > 0) {
+        return data.uploaded[0].url;
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Image upload error:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to upload image";
+      toast.error(errorMessage);
+      return null;
+    }
+  };
+
+  // Handle multiple files (for drop/paste)
+  const handleFiles = async (
+    files: File[],
+    editor: ReturnType<typeof useEditor>,
+    position?: number,
+  ) => {
+    const imageFiles = files.filter(
+      (file) =>
+        file.type.startsWith("image/") ||
+        file.type === "image/heic" ||
+        file.type === "image/heif",
+    );
+
+    if (imageFiles.length === 0) {
+      return;
+    }
+
+    // Show loading toast
+    const loadingToast = toast.loading(
+      `Uploading ${imageFiles.length} image${imageFiles.length > 1 ? "s" : ""}...`,
+    );
+
+    for (const file of imageFiles) {
+      const url = await uploadImage(file);
+
+      if (url && editor) {
+        // Insert image at position (if dropped) or at cursor
+        if (position !== undefined) {
+          editor
+            .chain()
+            .focus()
+            .insertContentAt(position, {
+              type: "image",
+              attrs: { src: url },
+            })
+            .run();
+        } else {
+          editor.chain().focus().setImage({ src: url }).run();
+        }
+      }
+    }
+
+    toast.dismiss(loadingToast);
+    toast.success(
+      `Uploaded ${imageFiles.length} image${imageFiles.length > 1 ? "s" : ""}`,
+    );
+  };
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -48,12 +141,29 @@ export function RichTextEditor({
       }),
       Image.configure({
         inline: true,
-        allowBase64: true,
+        allowBase64: false,
       }),
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
           class: "text-primary underline underline-offset-4",
+        },
+      }),
+      FileHandler.configure({
+        allowedMimeTypes: [
+          "image/png",
+          "image/jpeg",
+          "image/gif",
+          "image/webp",
+          "image/avif",
+          "image/heic",
+          "image/heif",
+        ],
+        onDrop: (currentEditor, files, pos) => {
+          handleFiles(files, currentEditor, pos);
+        },
+        onPaste: (currentEditor, files) => {
+          handleFiles(files, currentEditor);
         },
       }),
     ],
@@ -187,6 +297,16 @@ export function RichTextEditor({
         <div className="w-px h-6 bg-border mx-1" />
 
         <ToolbarButton
+          onClick={() => {
+            fileInputRef.current?.click();
+          }}
+        >
+          <ImageIcon className="size-4" />
+        </ToolbarButton>
+
+        <div className="w-px h-6 bg-border mx-1" />
+
+        <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().undo()}
         >
@@ -200,6 +320,23 @@ export function RichTextEditor({
           <RedoIcon className="size-4" />
         </ToolbarButton>
       </div>
+
+      {/* Hidden file input for toolbar button */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,.heic,.heif"
+        multiple
+        className="hidden"
+        onChange={(e) => {
+          const files = Array.from(e.target.files || []);
+          if (files.length > 0 && editor) {
+            handleFiles(files, editor);
+          }
+          // Reset input so same file can be uploaded again
+          e.target.value = "";
+        }}
+      />
 
       {/* Editor */}
       <EditorContent editor={editor} />

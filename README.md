@@ -9,8 +9,15 @@ _...starting from not-zero lol_
   - [x] Add new migration for storage bucket(s)
   - [x] Image/mutli-image type uploads
   - [x] Generic file type uploads
-  - [ ] Rich text inline image/video uploads
+  - [x] Rich text inline image/video uploads
   - [x] Fix edit form to pull image list on load - shows empty right now if you hit the URL directly, but works if you click the edit button
+- [ ] Make the editor better...
+  - [ ] Most styles don't work (h1/h2/ul/ol/quote)
+  - [ ] Images should be a little easier to drag/drop (maybe just a cursor update)
+  - [ ] Add "edit mode" that makes the editor full-screen
+- [ ] Add markdown mode....?
+  - [ ] Rich text markdown export?
+  - [ ] Markdown editor (separate from rich text?)
 - [ ] Fix max-width on item viewer and create/edit form (it's more constrained than the other pages)
 - [ ] Fix breadcrums, they are inconsistent across the app
 - [ ] Collection edit validation (what happens to exisitng items if you remove a field, or rename a slug, for example)
